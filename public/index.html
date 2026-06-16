@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Built by Bots — live feed of repos shipped by Claude & Codex</title>
+<meta name="description" content="A live feed of brand-new public GitHub repositories built with Claude Code and OpenAI Codex." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>" />
+<style>
+  :root {
+    --bg: #08090d;
+    --bg-2: #0d0f16;
+    --panel: #12141d;
+    --card: #14161f;
+    --card-2: #181b26;
+    --border: #23273400;
+    --border-solid: #232734;
+    --hair: #1c2030;
+    --text: #eef0f6;
+    --muted: #8b90a3;
+    --muted-2: #5d6275;
+    --claude: #e8835c;
+    --codex: #19c39a;
+    --accent: #7c93ff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background:
+      radial-gradient(900px 500px at 78% -8%, rgba(124,147,255,.12), transparent 60%),
+      radial-gradient(800px 500px at 12% 0%, rgba(25,195,154,.08), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    font: 15px/1.55 ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 44px 20px 90px; }
+  a { color: inherit; }
+
+  /* ---------- header ---------- */
+  header { text-align: center; margin-bottom: 26px; }
+  .live {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 18px;
+    padding: 5px 12px 5px 10px; border: 1px solid var(--hair); border-radius: 999px;
+    background: rgba(255,255,255,.02);
+  }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%; background: #25d366;
+    box-shadow: 0 0 0 0 rgba(37,211,102,.7); animation: pulse 2.2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(37,211,102,.55); }
+    70% { box-shadow: 0 0 0 7px rgba(37,211,102,0); }
+    100% { box-shadow: 0 0 0 0 rgba(37,211,102,0); }
+  }
+  h1 {
+    font-size: clamp(34px, 7vw, 56px); margin: 0 0 12px; line-height: 1.02;
+    letter-spacing: -.03em; font-weight: 800;
+    background: linear-gradient(180deg, #fff 30%, #aeb9e8); -webkit-background-clip: text;
+    background-clip: text; color: transparent;
+  }
+  h1 .bots { background: linear-gradient(90deg, var(--claude), var(--codex)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { color: var(--muted); margin: 0 auto; max-width: 480px; font-size: 15.5px; }
+
+  /* ---------- stats ---------- */
+  .stats { display: flex; justify-content: center; gap: 0; margin: 26px auto 0; max-width: 440px;
+    border: 1px solid var(--hair); border-radius: 16px; background: linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,0)); overflow: hidden; }
+  .stat { flex: 1; padding: 14px 8px; text-align: center; }
+  .stat + .stat { border-left: 1px solid var(--hair); }
+  .stat b { display: block; font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+  .stat span { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-top: 3px; }
+  .stat.cl b { color: var(--claude); } .stat.cx b { color: var(--codex); }
+
+  /* ---------- controls ---------- */
+  .controls {
+    position: sticky; top: 12px; z-index: 5;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;
+    margin: 30px 0 18px; padding: 8px; border-radius: 16px;
+    background: rgba(13,15,22,.72); backdrop-filter: blur(12px);
+    border: 1px solid var(--hair);
+  }
+  .pills { display: flex; gap: 4px; }
+  .pill {
+    border: 0; background: transparent; color: var(--muted); cursor: pointer;
+    padding: 8px 14px; border-radius: 11px; font-size: 13.5px; font-weight: 600;
+    transition: all .15s; display: inline-flex; align-items: center; gap: 7px;
+  }
+  .pill:hover { color: var(--text); background: rgba(255,255,255,.03); }
+  .pill.active { background: var(--card-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--hair); }
+  .pill .cnt { font-size: 11.5px; font-weight: 700; color: var(--muted-2); background: rgba(255,255,255,.05); padding: 1px 7px; border-radius: 999px; }
+  .pill.active[data-filter="claude"] .cnt { color: var(--claude); }
+  .pill.active[data-filter="codex"] .cnt { color: var(--codex); }
+  .right { display: flex; gap: 8px; align-items: center; }
+  input.search, select.sort {
+    background: var(--bg-2); border: 1px solid var(--hair); color: var(--text);
+    padding: 9px 13px; border-radius: 11px; font-size: 13px; outline: none; font-family: inherit;
+  }
+  input.search { width: 160px; }
+  input.search:focus, select.sort:focus { border-color: var(--accent); }
+  select.sort { cursor: pointer; }
+
+  /* ---------- category bar ---------- */
+  .catbar { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 20px; }
+  .catpill {
+    border: 1px solid var(--hair); background: var(--card); color: var(--muted);
+    cursor: pointer; padding: 6px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+    transition: all .14s; display: inline-flex; align-items: center; gap: 6px; font-family: inherit;
+  }
+  .catpill:hover { color: var(--text); border-color: #313647; }
+  .catpill .n { font-size: 11px; font-weight: 700; color: var(--muted-2); }
+  .catpill.active { background: rgba(124,147,255,.16); border-color: rgba(124,147,255,.45); color: #dfe4ff; }
+  .catpill.active .n { color: var(--accent); }
+  .catpill.zero { opacity: .38; }
+
+  /* ---------- feed ---------- */
+  .feed { display: flex; flex-direction: column; gap: 11px; }
+  .card {
+    position: relative; display: block; text-decoration: none; color: inherit; overflow: hidden;
+    background: var(--card); border: 1px solid var(--border-solid); border-radius: 16px;
+    padding: 16px 18px 14px; transition: transform .14s ease, border-color .14s, background .14s;
+    animation: rise .4s cubic-bezier(.2,.7,.3,1) both;
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; opacity: .8; }
+  .card.claude::before { background: linear-gradient(var(--claude), transparent); }
+  .card.codex::before  { background: linear-gradient(var(--codex), transparent); }
+  .card:hover { background: var(--card-2); border-color: #313647; transform: translateY(-2px); }
+  .card:hover::after {
+    content: "Open on GitHub ↗"; position: absolute; right: 16px; bottom: 12px;
+    font-size: 11px; color: var(--muted); font-weight: 600;
+  }
+
+  .card-top { display: flex; align-items: center; gap: 11px; margin-bottom: 9px; }
+  .avatar { width: 30px; height: 30px; border-radius: 8px; background: var(--bg-2); flex: none; border: 1px solid var(--hair); }
+  .repo { font-weight: 700; font-size: 15.5px; letter-spacing: -.01em; word-break: break-word; line-height: 1.25; }
+  .repo .owner { color: var(--muted); font-weight: 500; }
+  .new-tag { font-size: 9.5px; font-weight: 800; letter-spacing: .06em; color: #25d366; border: 1px solid rgba(37,211,102,.4); background: rgba(37,211,102,.12); padding: 1px 6px; border-radius: 6px; margin-left: 7px; vertical-align: middle; }
+  .badge {
+    margin-left: auto; flex: none; font-size: 11px; font-weight: 700; letter-spacing: .02em;
+    padding: 4px 10px 4px 8px; border-radius: 999px; display: inline-flex; align-items: center; gap: 5px;
+  }
+  .badge svg { width: 11px; height: 11px; }
+  .badge.claude { color: var(--claude); background: rgba(232,131,92,.12); border: 1px solid rgba(232,131,92,.3); }
+  .badge.codex  { color: var(--codex);  background: rgba(25,195,154,.12); border: 1px solid rgba(25,195,154,.3); }
+  .desc { color: #c8ccda; margin: 0 0 11px; font-size: 14px; line-height: 1.5; }
+  .desc.empty { color: var(--muted-2); font-style: italic; }
+  .card-foot { display: flex; flex-wrap: wrap; gap: 14px; color: var(--muted); font-size: 12px; align-items: center; }
+  .card-foot .lang, .card-foot .clock { display: inline-flex; align-items: center; gap: 6px; }
+  .card-foot .clock svg { opacity: .7; }
+  .cat {
+    cursor: pointer; font-weight: 600; color: #b9c0d4;
+    background: rgba(124,147,255,.1); border: 1px solid rgba(124,147,255,.22);
+    padding: 2px 9px; border-radius: 999px; transition: all .14s;
+  }
+  .cat:hover { background: rgba(124,147,255,.2); color: #fff; }
+  .langdot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  /* ---------- skeleton + empty ---------- */
+  .skel { height: 96px; border-radius: 16px; border: 1px solid var(--border-solid); background:
+    linear-gradient(100deg, var(--card) 30%, var(--card-2) 50%, var(--card) 70%);
+    background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+  @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+  .empty-state { text-align: center; color: var(--muted); padding: 70px 16px; border: 1px dashed var(--hair); border-radius: 16px; }
+  .empty-state b { color: var(--text); display: block; margin-bottom: 6px; font-size: 16px; }
+
+  footer { text-align: center; color: var(--muted-2); font-size: 12px; margin-top: 56px; line-height: 1.8; }
+  footer a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--hair); }
+  footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="live"><span class="dot"></span> Live feed · auto-updating</div>
+      <h1>Built by <span class="bots">Bots</span></h1>
+      <p class="sub">Brand-new GitHub repositories shipped by Claude&nbsp;Code and OpenAI&nbsp;Codex — discovered as they're built.</p>
+      <div class="stats">
+        <div class="stat"><b id="s-total">—</b><span>Repos</span></div>
+        <div class="stat cl"><b id="s-claude">—</b><span>Claude</span></div>
+        <div class="stat cx"><b id="s-codex">—</b><span>Codex</span></div>
+      </div>
+    </header>
+
+    <div class="controls">
+      <div class="pills" id="pills">
+        <button class="pill active" data-filter="all">All <span class="cnt" id="c-all">0</span></button>
+        <button class="pill" data-filter="claude">Claude <span class="cnt" id="c-claude">0</span></button>
+        <button class="pill" data-filter="codex">Codex <span class="cnt" id="c-codex">0</span></button>
+      </div>
+      <div class="right">
+        <input class="search" id="search" placeholder="Search…" />
+        <select class="sort" id="sort">
+          <option value="new">Newest</option>
+          <option value="stars">Top stars</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="catbar" id="catbar"></div>
+
+    <div class="feed" id="feed"></div>
+
+    <footer>
+      Updated <span id="updated">—</span> · polls every ~10 min · data from the GitHub commit-search API<br>
+      Detects the commit fingerprints left by Claude&nbsp;Code &amp; Codex.
+    </footer>
+  </div>
+
+<script>
+  const feedEl = document.getElementById("feed");
+  const pills = document.getElementById("pills");
+  const searchEl = document.getElementById("search");
+  const sortEl = document.getElementById("sort");
+  const catbarEl = document.getElementById("catbar");
+
+  let state = { entries: [], filter: "all", q: "", sort: "new", category: "all", generatedAt: null, loaded: false };
+
+  // GitHub-style language colors.
+  const LANG = {
+    JavaScript:"#f1e05a", TypeScript:"#3178c6", Python:"#3572A5", Go:"#00ADD8", Rust:"#dea584",
+    Ruby:"#701516", Java:"#b07219", "C#":"#178600", "C++":"#f34b7d", C:"#555555", HTML:"#e34c26",
+    CSS:"#563d7c", Shell:"#89e051", PHP:"#4F5D95", Swift:"#F05138", Kotlin:"#A97BFF", Dart:"#00B4AB",
+    Vue:"#41b883", "Jupyter Notebook":"#DA5B0B", TeX:"#3D6117", Elixir:"#6e4a7e", Scala:"#c22d40",
+    Lua:"#000080", Haskell:"#5e5086", Clojure:"#db5855", Astro:"#ff5a03", Svelte:"#ff3e00", Zig:"#ec915c"
+  };
+  const SPARK = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg>';
+  const HEX = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/></svg>';
+  const CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11" style="vertical-align:-1px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+
+  function timeAgo(iso) {
+    const s = Math.floor((Date.now() - new Date(iso)) / 1000);
+    if (s < 60) return s + "s ago";
+    const m = Math.floor(s / 60); if (m < 60) return m + "m ago";
+    const h = Math.floor(m / 60); if (h < 24) return h + "h ago";
+    const d = Math.floor(h / 24); return d + (d === 1 ? " day ago" : " days ago");
+  }
+  function esc(s) { return (s || "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); }
+
+  function setCounts() {
+    const all = state.entries, cl = all.filter(e => e.source === "claude").length, cx = all.filter(e => e.source === "codex").length;
+    document.getElementById("s-total").textContent = all.length;
+    document.getElementById("s-claude").textContent = cl;
+    document.getElementById("s-codex").textContent = cx;
+    document.getElementById("c-all").textContent = all.length;
+    document.getElementById("c-claude").textContent = cl;
+    document.getElementById("c-codex").textContent = cx;
+    document.getElementById("updated").textContent = state.generatedAt ? timeAgo(state.generatedAt) : "—";
+  }
+
+  // Category pill bar — counts reflect the current source filter (All/Claude/Codex).
+  function renderCatbar() {
+    const bySource = state.entries.filter(e => state.filter === "all" || e.source === state.filter);
+    const counts = {};
+    for (const e of bySource) { const k = e.category || "Other"; counts[k] = (counts[k] || 0) + 1; }
+    const cats = [...new Set(state.entries.map(e => e.category || "Other"))]
+      .sort((a, b) => (counts[b] || 0) - (counts[a] || 0));
+    const pill = (val, label, n, on) =>
+      `<button class="catpill ${on ? "active" : ""} ${n === 0 ? "zero" : ""}" data-cat="${esc(val)}">${esc(label)} <span class="n">${n}</span></button>`;
+    catbarEl.innerHTML =
+      pill("all", "All", bySource.length, state.category === "all") +
+      cats.map(c => pill(c, c, counts[c] || 0, state.category === c)).join("");
+  }
+
+  function render() {
+    if (!state.loaded) {
+      feedEl.innerHTML = Array.from({length: 5}, () => '<div class="skel"></div>').join("");
+      return;
+    }
+    renderCatbar();
+    const q = state.q.toLowerCase();
+    let list = state.entries.filter(e =>
+      (state.filter === "all" || e.source === state.filter) &&
+      (state.category === "all" || e.category === state.category) &&
+      (!q || (e.repo + " " + (e.summary || "") + " " + (e.category || "")).toLowerCase().includes(q))
+    );
+    list.sort(state.sort === "stars"
+      ? (a, b) => (b.stars||0) - (a.stars||0) || new Date(b.createdAt) - new Date(a.createdAt)
+      : (a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    if (!list.length) {
+      feedEl.innerHTML = `<div class="empty-state"><b>Nothing here yet</b>The poller runs every few minutes — new repos will appear automatically.</div>`;
+      return;
+    }
+
+    const now = Date.now();
+    feedEl.innerHTML = list.map((e, i) => {
+      const [owner, name] = (e.repo || "/").split("/");
+      const label = e.source === "claude" ? "Claude" : "Codex";
+      const mark = e.source === "claude" ? SPARK : HEX;
+      const summary = e.summary || "";
+      const isNew = e.createdAt && (now - new Date(e.createdAt)) < 86400000;
+      const lc = LANG[e.language] || "#8b90a3";
+      const foot = [
+        e.category ? `<span class="cat" data-cat="${esc(e.category)}">${esc(e.category)}</span>` : "",
+        e.language ? `<span class="lang"><span class="langdot" style="background:${lc}"></span>${esc(e.language)}</span>` : "",
+        e.createdAt ? `<span class="clock">${CLOCK} ${timeAgo(e.createdAt)}</span>` : "",
+        e.stars ? `<span>★ ${e.stars}</span>` : "",
+      ].filter(Boolean).join("");
+      return `
+      <a class="card ${e.source}" href="${esc(e.url)}" target="_blank" rel="noopener" style="animation-delay:${Math.min(i*25,350)}ms">
+        <div class="card-top">
+          ${e.avatar ? `<img class="avatar" src="${esc(e.avatar)}" alt="" loading="lazy"/>` : `<div class="avatar"></div>`}
+          <span class="repo"><span class="owner">${esc(owner)}/</span>${esc(name || "")}${isNew ? '<span class="new-tag">NEW</span>' : ''}</span>
+          <span class="badge ${e.source}">${mark}${label}</span>
+        </div>
+        <p class="desc ${summary ? "" : "empty"}">${summary ? esc(summary) : "No description yet."}</p>
+        <div class="card-foot">${foot}</div>
+      </a>`;
+    }).join("");
+  }
+
+  async function load() {
+    try {
+      const res = await fetch("./feed.json?_=" + Date.now());
+      const data = await res.json();
+      state.entries = data.entries || [];
+      state.generatedAt = data.generatedAt;
+      state.loaded = true;
+      setCounts();
+      render();
+    } catch {
+      state.loaded = true;
+      feedEl.innerHTML = `<div class="empty-state"><b>Couldn't load the feed</b>Run <code>node fetch.mjs</code> to generate it.</div>`;
+    }
+  }
+
+  pills.addEventListener("click", (e) => {
+    const b = e.target.closest(".pill"); if (!b) return;
+    [...pills.children].forEach(p => p.classList.remove("active"));
+    b.classList.add("active");
+    state.filter = b.dataset.filter; render();
+  });
+  searchEl.addEventListener("input", () => { state.q = searchEl.value; render(); });
+  sortEl.addEventListener("change", () => { state.sort = sortEl.value; render(); });
+
+  // Category pill bar.
+  catbarEl.addEventListener("click", (e) => {
+    const p = e.target.closest(".catpill"); if (!p) return;
+    state.category = p.dataset.cat; render();
+  });
+
+  // Click a card's category chip to filter by it (without following the link).
+  feedEl.addEventListener("click", (e) => {
+    const chip = e.target.closest(".cat"); if (!chip) return;
+    e.preventDefault();
+    state.category = chip.dataset.cat; render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  render(); // show skeletons immediately
+  load();
+  setInterval(load, 60000);
+</script>
+</body>
+</html>

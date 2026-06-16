@@ -1,0 +1,11 @@
+{
+  "name": "ai-repo-radar",
+  "version": "0.1.0",
+  "description": "Live feed of brand-new public GitHub repos built by Claude Code and OpenAI Codex.",
+  "type": "module",
+  "scripts": {
+    "fetch": "node fetch.mjs",
+    "serve": "node serve.mjs"
+  },
+  "license": "MIT"
+}

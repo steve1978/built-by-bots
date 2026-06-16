@@ -1,0 +1,596 @@
+{
+  "crookedsystem/llm-wiki-mcp": {
+    "sha": "20450799c4a6d7255f7b51a07dd77c2ce7705263",
+    "summary": "Runs a FastAPI MCP server that manages, searches, updates, and pushes a Git‑backed Obsidian Markdown wiki."
+  },
+  "xingbofeng/VoxFlow": {
+    "sha": "97e4cc92e1b6f8dae47cdff05780654d1aab6af6",
+    "summary": "VoxFlow is a lightweight macOS voice‑to‑text tool that inserts spoken words directly at the cursor without interrupting workflow.",
+    "category": "CLI / Tooling"
+  },
+  "n-pelleriti/hackathon-clean": {
+    "sha": "9820911c1878fa5804bfb9038e4d47a2def1de87",
+    "summary": "Signal Garden is a lightweight sci‑fi arcade engine that lets an LLM continuously mutate game modes while players stay in the loop.",
+    "category": "Game"
+  },
+  "youngwoohome/tailblend": {
+    "sha": "2f969eba8b731a22bd2f958e8f1727e9f5c44e4b",
+    "summary": "Provides fast, efficient inference and serving for large language models with advanced optimizations and flexible deployment options."
+  },
+  "Bigstonks1/Snap2Sim": {
+    "sha": "c5339c8bc42899dd16f888ee6c40beb3e8fc9072",
+    "summary": "",
+    "category": "Other"
+  },
+  "smpdl/telltale": {
+    "sha": "a552907d62f98230fab50106263b766c3dc0c6cf",
+    "summary": "A single‑player Texas Hold'em roguelike where AI opponents remember runs and speak in character while making poker decisions."
+  },
+  "NathanFirmo/chutometro": {
+    "sha": "4fd0919078447c28b52c15e5db42c14a3532f28c",
+    "summary": "CLI that estimates GitHub issue complexity using local AI and historical PR data stored in SQLite."
+  },
+  "bolajiev/ThreeGen": {
+    "sha": "5ac96615a36c1830bdc72f133846912afc52d29a",
+    "summary": "Converts natural language descriptions into valid Three.js HTML scenes via a JSON scene graph and deterministic compiler.",
+    "category": "CLI / Tooling"
+  },
+  "Lordakee/fashion-radar": {
+    "sha": "a317f5a2394074dc0fcd973208015c92e946eb98",
+    "summary": "Tracks fashion signals from public feeds, matches brands and trends, and outputs local Markdown/JSON reports and dashboards."
+  },
+  "getsentry/flue-agents": {
+    "sha": "69821acdd1b335bfe048e6502e7ce1de6b6ce818",
+    "summary": "Runs Sentry automation agents on Cloudflare Workers to triage GitHub issues automatically."
+  },
+  "krthr/fanzines.app": {
+    "sha": "e60db6bd6bee89f5c3d3abce22fe86006bb7274d",
+    "summary": "Provides a minimal Nuxt.js starter template for building web applications.",
+    "category": "Web App"
+  },
+  "udirobert/bodydebt": {
+    "sha": "ce187cf9f9694dd6de3fed185dedc0fd0238d816",
+    "summary": "Calculates physiological debt from lifestyle choices and gives local AI recovery advice without sending data to the cloud.",
+    "category": "CLI / Tooling"
+  },
+  "2513502304/bilibili-emote": {
+    "sha": "66dfb68d34099d29cb1f8581c048c103518cf689",
+    "summary": "Automatically updates, indexes, and lets users search, preview, and download Bilibili emote packs via web or locally.",
+    "category": "Web App"
+  },
+  "dondone-dev/dondone-tools": {
+    "sha": "6b8d7aed914c92e790775e0b5e39794f56654705",
+    "summary": "Provides lightweight, browser‑side tools for cryptography, hashing, encoding, password strength, and text utilities, all running locally."
+  },
+  "agent-packs/cli": {
+    "sha": "006e5ca3f1932e57a3fdccc5c2c54a7b6a07a897",
+    "summary": "Manages, installs, and syncs curated AI coding agent capability bundles from a registry into local agents."
+  },
+  "Sahil170595/huggingface-RTSI": {
+    "sha": "c14726095cab094dbea28f252b46ef8a652159ae",
+    "summary": "Quantsafe Certifier for testing whether quantized models are prone to be jailbroken and generate unsafe outputs.",
+    "category": "Other"
+  },
+  "BrettRey/kinds-as-projectibility-profiles": {
+    "sha": "791669f6a293b8a17266e2bf0dec35386a5c504b",
+    "summary": "A LaTeX repository hosting a draft of Brett Reynolds’s paper “Kinds as Projectibility Profiles.”",
+    "category": "Docs / Content"
+  },
+  "bO-05/lease-lens": {
+    "sha": "2ccf3c21c4058d212c565cef2fd288372322ba5b",
+    "summary": "It scans lease documents, flags risky clauses, scores risk, highlights text, and suggests plain‑English push‑back tips.",
+    "category": "Web App"
+  },
+  "bisonbet/medical-appt-prep": {
+    "sha": "522115d2a97eda0da407d4a23bd80ae30c045865",
+    "summary": "Prepares patients for doctor visits by generating symptom timelines, questions, and background info from entered notes and meds."
+  },
+  "asanwari/secret-student": {
+    "sha": "0e014b2a822ec045f5cf46375ef2eaedad8dc496",
+    "summary": "A local AI school adventure where lessons become missions, quizzes train, and a final boss battle tests knowledge."
+  },
+  "melomba2/velvet-rope": {
+    "sha": "ccb61a76529501e6bbe3360665628e7ce96b452f",
+    "summary": "Interactive game where players read gatekeepers’ moods and persuade them to gain entry."
+  },
+  "sk2andy/homebrew-tap": {
+    "sha": "2d70cb6970eeca8718535426945ab259feae36f2",
+    "summary": "Installs a universal macOS package manager that handles Homebrew, Mac App Store, npm/Volta, pnpm, bun, and uv Python tools."
+  },
+  "jaycrain/G4L": {
+    "sha": "c769eb565975ce9272bdc4daec603e388ef47e2c",
+    "summary": "Builds a member dashboard and AI companion for midlife adults to track identity scores and progress."
+  },
+  "opheliaclarke/lendpeak-working-capital-lander": {
+    "sha": "b71b35ea5fe9fd5ac18365c8bfda89b74bdc8487",
+    "summary": "Provides a ready‑to‑deploy, multi‑program landing page for LendPeak’s business funding, complete with forms, testimonials, and compliance."
+  },
+  "nyd-user-1/44b": {
+    "sha": "883b9f8cb7f89afa6dd8becc41d3abfba9e4f991",
+    "summary": "Public registry, library, and incident record for AI compliance under New York’s 44‑B law, tracking labs, models, and safety filings."
+  },
+  "ggallegofev/prisonislandtry": {
+    "sha": "0a9047e567903d9a931d521bc325aa01bb097cb2",
+    "summary": ""
+  },
+  "jwfing/ustock-daily-report": {
+    "sha": "0da367b02ee8404c03fa14743eab817ff3f6c3a2",
+    "summary": "Generates bilingual daily US stock market recap reports and emails them to subscribers."
+  },
+  "m-xyzt/calendar-app-demo": {
+    "sha": "acf182bfd87c5206e43bcc452bc5eefff231ebbd",
+    "summary": ""
+  },
+  "mktoduo-tech/Fluxograma-de-Conteudo": {
+    "sha": "b6bc2d0707cca84e18482082138838fecad003a0",
+    "summary": "Sistema de criação, manutenção e expansão de conteúdo.",
+    "category": "Web App"
+  },
+  "jariahh/linux-mail-wrapper": {
+    "sha": "5b79d89fb78af8737d19ef8ab1ace7bbdf972624",
+    "summary": "Provides a single desktop window that hosts Outlook Web and Gmail, letting users switch accounts with a sidebar."
+  },
+  "Copyzin/Gizele-Nunes": {
+    "sha": "f8d4b8b6dd0b7d667037675276c6402a52b9d4cd",
+    "summary": "Static landing page showcasing the SAFE legal protection method for dental practices, with contact, credentials, and WhatsApp integration."
+  },
+  "o-frings/clue": {
+    "sha": "571af7d6dd85a97273d6cb035f3d45b3e804b31d",
+    "summary": ""
+  },
+  "eddienyambo000-crypto/grandpa": {
+    "sha": "ae864e1716db428b9e8bde49b40e505e5cdfc30a",
+    "summary": ""
+  },
+  "jmckinley/smartears": {
+    "sha": "2246006386cf1b2debdb837a6b6d1609461a4f06",
+    "summary": "SmartEars is an iOS voice assistant that turns AirPods into a hands‑free, audio‑first helper, listening, interpreting, and speaking without a screen.",
+    "category": "Mobile"
+  },
+  "ana-ned/Uncapped-onboarding-flow-current-general-version-": {
+    "sha": "7047e1989c2d9e0f6367db31c60da841d898a3c9",
+    "summary": "Based on last designs documented in Figma",
+    "category": "Web App"
+  },
+  "fspDev/SOMA": {
+    "sha": "25593e011a9b9f4ed6d7f346eb09e2b53823ad7f",
+    "summary": "Runs a local AI Studio web app that uses a Gemini API key to generate responses."
+  },
+  "DenisCanndelta/project-progress-bar": {
+    "sha": "f7d142d8aa039572540f3d487c3d619b3cea339f",
+    "summary": "Salesforce LWC progress bar for MPM4_BASE Milestone1 Project records showing cost incurred vs opportunity value with invoice markers",
+    "category": "Web App"
+  },
+  "Sullynobugz/wid": {
+    "sha": "9aa4a024d163c35910116cc99f8fc3f5da17ef07",
+    "summary": ""
+  },
+  "Abinithishkumarprabakaran/astro_avatar": {
+    "sha": "5d2a8d2acd8643769ea8e459b88b2001f1e1eb92",
+    "summary": "",
+    "category": "Other"
+  },
+  "simonXPO/martin-buenger-architekt": {
+    "sha": "422fd05ddf5023a014d549a98779e4cc2eb05c00",
+    "summary": "Website für Martin Bünger Architekt"
+  },
+  "liuyuan0018/diablo_lite": {
+    "sha": "3a28c7ab9cd9c14a4df1f9a9cb47aea7ece7fa56",
+    "summary": "Browser-based Diablo‑style ARPG built entirely in vanilla JavaScript, using Canvas 2D and no external libraries."
+  },
+  "Jojobeans1981/mta-underground": {
+    "sha": "7812560d8f2f8734455b97e6df0da8d44e2a1fe1",
+    "summary": ""
+  },
+  "DanKnowsAGuy-web/what-can-you-offer": {
+    "sha": "637d759941ed84a7c97643d3f9449b4eaec4235e",
+    "summary": "Energy+ Partner Offer Audit",
+    "category": "CLI / Tooling"
+  },
+  "tbenoit-hash/site-reservation-sh": {
+    "sha": "6aec55c6556f78039f9ae5ba90ca37c6c32e0e18",
+    "summary": "",
+    "category": "Other"
+  },
+  "flippelt/gmcr-srd-systems": {
+    "sha": "c25a87d43085990f4394e52501cf065ec6373316",
+    "summary": "SRD-compliant rules and defaults for tabletop RPG systems (consumed by GM Control Room)",
+    "category": "Game"
+  },
+  "farlo001-eng/mf-tracker": {
+    "sha": "6e632cea1682ec7d8aaeddd4626abac9849de46f",
+    "summary": ""
+  },
+  "yakovs153/WORLDCUP26_SN": {
+    "sha": "a8b31e7ef1e90dd09f47ba85702f2a763e0f5689",
+    "summary": "A PWA for predicting 2026 World Cup results, built with React, Vite, and Firebase, featuring live updates and scoring.",
+    "category": "Web App"
+  },
+  "raahulgupta07/rahulai-city-pharma": {
+    "sha": "766d6c07b7cb4bfdb59c67148c9bb23e5cb4fc71",
+    "summary": "CityPharma is a single‑agent analytics tool for pharmaceutical inventory and sales, offering bilingual chat and SQL‑backed insights.",
+    "category": "AI / Agents"
+  },
+  "gevorg228/worldcup2026": {
+    "sha": "c60089cc5e73e7be2cca8b88380a0e0252218379",
+    "summary": ""
+  },
+  "AdamBoet/Personal-site": {
+    "sha": "bbf3688808fc6f1ebaf56f94a10af22c15e021a8",
+    "summary": "",
+    "category": "Other"
+  },
+  "Eitan-S-23/Trace": {
+    "sha": "b1df4ab4f25a5abf9b49ed596f68123cafdc0ee4",
+    "summary": "Scans nearby BLE devices, displays detailed information, and lets users connect through a Flutter interface."
+  },
+  "sespinoza-cl/Pap2026-3-emg-ane": {
+    "sha": "0b94bdfe8df5052951aff34ac408666384b1dcc3",
+    "summary": "Analyzes masseter EMG during chewing under lidocaine, extracting cycles, time‑frequency features, and statistical comparisons.",
+    "category": "Data / ML"
+  },
+  "hansenliang/retro-llm-store": {
+    "sha": "c6a30b896556bb5e6ee2d5e7fedaea38f219bed9",
+    "summary": "👾 RETRO·LLM — an 80s neon 3D back room of pre-owned AI minds (Three.js, WebGL)",
+    "category": "AI / Agents"
+  },
+  "XylOhmPon/ArtifexingCRM": {
+    "sha": "5b507eef41225f10424549674e20d3f4ceb91ff4",
+    "summary": "",
+    "category": "Other"
+  },
+  "CaptCanadaOG/aurora-ai-portfolio": {
+    "sha": "bf8ac4d2427364974a2c097e12c54a79f78a47c1",
+    "summary": "Recreates a high‑fidelity AI portfolio dashboard with ten interactive workspaces using a custom design system."
+  },
+  "yxthu27/Clipless": {
+    "sha": "67c9e610b4cbfc558cb3f9c78cf851b57190b2fa",
+    "summary": "Captures screen regions to clipboard with two keystrokes, supports OCR, no files, fully offline."
+  },
+  "anooppattern/edgevision-pro": {
+    "sha": "2ebfe163efe982a0ee93886351b02b1a90b9bf5c",
+    "summary": "Marketing site for www.edgevision.pro — Pattern AI Labs' EdgeVision platform (RetailTrack + RiderTrack)",
+    "category": "Web App"
+  },
+  "bborok1234/fatebound": {
+    "sha": "22a2aaecf910c56ed30f5c4d65481d99801fbd6d",
+    "summary": "천명회귀 · Fatebound — 터미널에서 즐기는 무협 회귀 로그라이트 오토배틀러 (Textual TUI). Source-available, noncommercial."
+  },
+  "hugooole/metronome_app": {
+    "sha": "47b86480747d587a4874e3d302d041d59aaf1813",
+    "summary": ""
+  },
+  "devclone20/agentsview": {
+    "sha": "fd2d8441e3522621f5e45ce9c7919f13308ded88",
+    "summary": "Migrado de aigenesis20/agentsview",
+    "category": "Web App"
+  },
+  "sankhacooray/travel-sankhacooray-com": {
+    "sha": "3fb4be6ad13d0dfd9ded652b61f45670484633f4",
+    "summary": "Interactive world map of countries I've visited, shaded by frequency — travel.sankhacooray.com"
+  },
+  "AlexShchuka/mirabilis": {
+    "sha": "d35033cf91c57ab5fc590b19300ba1df301902bb",
+    "summary": "Run Claude Code fully autonomously in an isolated Docker sandbox — cross-platform dev container (macOS / Linux / Windows WSL2) with the neuro-matrix harness, persistent memory, and open egress."
+  },
+  "lukeyin08/Paxer": {
+    "sha": "ce3d7e0b9a58162adc49c24355b198a8f0f87ece",
+    "summary": "Paxer is a web app that audits medical bills and EOBs for patients, using AI to spot insurer errors and help recover funds.",
+    "category": "Web App"
+  },
+  "xing0325/warhol-factory": {
+    "sha": "f52b89c4dcbceb5f3fe794633925f4de7e6f5839",
+    "summary": "THE SILVER FACTORY — an interactive Andy Warhol pop-art tribute. Hand-pull your own silkscreen, multiply it, mix inks, sit for a Screen Test. Made entirely in your browser.",
+    "category": "Web App"
+  },
+  "mstudiokato/portfolio": {
+    "sha": "9aedbd124a9e52a86678d819ed9c45bfdbf3a3e4",
+    "summary": "Portfolio MS",
+    "category": "Web App"
+  },
+  "Dananty07/ACTIVIDAD-CLASE-EXTRA-POW-MIGUEL-VELIZ": {
+    "sha": "27d01fd67655710518a22b77c92d0c710c71d173",
+    "summary": "Actividad de 3 puntos extra hecha en clase",
+    "category": "Other"
+  },
+  "codeit13/hiring": {
+    "sha": "fd7a64cff2f70abb754580a944d4fd96f6ba3c9e",
+    "summary": "",
+    "category": "Other"
+  },
+  "dicetavo/goodlease-landing": {
+    "sha": "294886323007fee893bf934f28b6c3ab0e14af69",
+    "summary": "A static landing site built with Astro 5 and Tailwind, deployed on Cloudflare Pages, serving product pages and legal content.",
+    "category": "Web App"
+  },
+  "polosesy/career": {
+    "sha": "2941e8443e9cc9250af2fee4908af5570c5870c6",
+    "summary": "",
+    "category": "Other"
+  },
+  "bandittfb/RUMI": {
+    "sha": "c09d9e080af97956061812fca807ee234e4842bc",
+    "summary": "RUMI is a local‑first tool that visualizes the gap between user corrections, code capacity, and actual usage to uncover latent features.",
+    "category": "CLI / Tooling"
+  },
+  "aniri/literary-loot-app": {
+    "sha": "5bd8c547c4597519d3c646800997e716a2905e7b",
+    "summary": "",
+    "category": "Other"
+  },
+  "sregan1/SharePoint-Smart-Data-Visualization": {
+    "sha": "6af64a7cd84eb12913c6e4cf01f6a2f9072559f6",
+    "summary": "A SharePoint SPFx web part that renders interactive charts from multiple data sources without coding.",
+    "category": "Web App"
+  },
+  "andrewpagels/vocabTabs": {
+    "sha": "3486fbf18a205fb4298f083c235a876d63d16eff",
+    "summary": "Vocab Tabs is a Chrome extension that shows a new vocabulary word with public‑domain artwork each time you open a tab.",
+    "category": "Web App"
+  },
+  "zeitdex/zeitdex.github.io": {
+    "sha": "c607c7ab8161a960c91ff0840d05e73c79ce41d8",
+    "summary": "Zeitdex hosts community-curated documentation and resources for circadian rhythm disorders, built with MkDocs Material.",
+    "category": "Docs / Content"
+  },
+  "TomScheichi/watchtracker": {
+    "sha": "7432646369635109ffcc5d1369ca366c60d36738",
+    "summary": "",
+    "category": "Other"
+  },
+  "erzhalrisanw/test-chat": {
+    "sha": "efdc73b8e33a4a60cb8dab43da0906ef52055bfb",
+    "summary": "",
+    "category": "Other"
+  },
+  "kemalyy/edumints-scorm-mcp": {
+    "sha": "a617725a34b3547d1328448eca4f8a1c77b57a31",
+    "summary": "A server that assembles SCORM‑compliant e‑learning courses from structured specs, validating, rendering, and packaging them into self‑contained zips.",
+    "category": "API / Backend"
+  },
+  "carlosmarins/eva-starter-kit": {
+    "sha": "8bfaa2572365d29dc37cacfbefc87922e83707f4",
+    "summary": "Crie sua própria assistente de IA pessoal (Eva, em OpenClaw) do zero — conversando, não configurando. Caminho gerenciado ou VM própria. Wizard que pergunta e ensina.",
+    "category": "Other"
+  },
+  "spring-kang/dev-agent": {
+    "sha": "77404787ed0e64071bb5c6c422fda817425f0f4c",
+    "summary": "A CLI that automates code generation, review, and PR creation from Notion-approved specs using Claude Code and Codex.",
+    "category": "Automation / Bot"
+  },
+  "goldhi0/meeting-room-booker": {
+    "sha": "7c5ef3a0be1d0b83cec05b2598856d4351ac371e",
+    "summary": "맥 메뉴바 회의실 예약 앱 (LGU+ 강남오피스 구글 캘린더 연동)",
+    "category": "Mobile"
+  },
+  "EngrHuzi/Reasonix-RAG": {
+    "sha": "2077c0e637246628e109c84b036df9346fd80cc5",
+    "summary": "Reasonix RAG retrieves answers by reasoning over a document’s hierarchical table of contents, avoiding embeddings and vector databases.",
+    "category": "AI / Agents"
+  },
+  "yussufrajab/csms_latest": {
+    "sha": "f9a63cd4c3af7b60dc45e1f64b1f0d244b40f9e9",
+    "summary": "A full‑stack Next.js HR system for Zanzibar’s civil service, managing employee lifecycle with PostgreSQL, MinIO, and AI features.",
+    "category": "Web App"
+  },
+  "SubZtep/geo-service": {
+    "sha": "a105ccdccf9349357eb1d472542fe709e7449453",
+    "summary": "A lightweight IP geolocation service that uses MaxMind GeoLite2 for fast city, country, and coordinate lookups with API key authentication.",
+    "category": "API / Backend"
+  },
+  "realrubbish/iobroker-fmd": {
+    "sha": "156a3358003f41215bc359f49de02406790dd302",
+    "summary": "An adapter to communicate with fmd-foss/fmd-server ",
+    "category": "API / Backend"
+  },
+  "yamalalakshman16-create/polymarket-v2-hft-reference": {
+    "sha": "0df49e9d4362dc926702e145da38b582acc0e46e",
+    "summary": "Verified, LLM-native reference for Polymarket CLOB V2 — every endpoint, the price-to-beat strike source, RTDS Chainlink datastreams, and historical trade retrieval. Built for HFT bot developers.",
+    "category": "AI / Agents"
+  },
+  "anisha-inc/agent-reflect-analyzer": {
+    "sha": "9d0154a955b06a7815c33a9d9fce5ed448e36301",
+    "summary": "Public analyzer + reusable workflow for Claude Code session reflection",
+    "category": "AI / Agents"
+  },
+  "wicanr2/wizardry-1-cht": {
+    "sha": "faa931b2e1e34f646ef318ba0ff2531d97bfce91",
+    "summary": "A full C++17 rewrite of Wizardry I with complete Traditional Chinese localization, cross‑platform SDL2 graphics, and all spell effects.",
+    "category": "Game"
+  },
+  "felixlkw/SK_Inno_PL_Agent": {
+    "sha": "c55feccfd706ee8c69401f578f742148d77e3d5a",
+    "summary": "Multi‑agent system that parses, aggregates, and validates monthly profit‑and‑loss Excel files, exposing results via a static dashboard.",
+    "category": "AI / Agents"
+  },
+  "xuenerissa-png/nerissa-competitive-research": {
+    "sha": "35169f66ba7b48b25614fffb15afe15fa2ddf98e",
+    "summary": "Disciplined competitor research SOP. A Claude Skill that refuses lazy AI shortcuts — every funding number needs 2 sources, every customer overlap needs verification, every recommendation needs 6-dimension scoring.",
+    "category": "AI / Agents"
+  },
+  "marjevani/miniapp": {
+    "sha": "f26b85381823953f04685b6630332c017bd3ab0b",
+    "summary": "A lightweight Telegram Mini App that receives draft data via URL fragments and posts to a secure backend.",
+    "category": "Web App"
+  },
+  "hellonecto-beep/fudosan-ai-journal": {
+    "sha": "eff27f5706a495cfaaccdce168ff82ecde37a32a",
+    "summary": "不動産AIジャーナル — AIで不動産業務を変えた人たちの記録",
+    "category": "Other"
+  },
+  "CNanninga/gift-certificate-manager": {
+    "sha": "ce79ae3c37ae8e9c2a35a8e8530e1cb5bb4f73c7",
+    "summary": "A web interface for creating, managing, and redeeming gift certificates with a simple Next.js frontend.",
+    "category": "Web App"
+  },
+  "huangwei-gem/coding": {
+    "sha": "801e9bd1d9080c3e2a65a967ea1f552a7ca2ce9b",
+    "summary": "coding项目",
+    "category": "Other"
+  },
+  "darkmirage/feedback-360": {
+    "sha": "d49d6ae4646d756e5869ba050b496a2f17dfaac1",
+    "summary": "A simple Next.js starter template for building web applications with automatic font optimization.",
+    "category": "Web App"
+  },
+  "kaikatsumata/awesome-ai-researchers": {
+    "sha": "fc017d0ff1f6f562b1191e80d9b70612bd04ad0d",
+    "summary": "A curated list of 1,029 influential AI researchers across 20 fields, detailing affiliations, research themes, and impact metrics.",
+    "category": "Data / ML"
+  },
+  "kaikatsumata/awesome-ai-survey-papers": {
+    "sha": "ef0cc7e5a06b3e5c44be97929776dca4810116f5",
+    "summary": "A curated list of 955 AI survey papers across 30 fields, with metadata, citations, and companion repos.",
+    "category": "Data / ML"
+  },
+  "MyoungSoo7/logistics-admin": {
+    "sha": "11912a9025a208e59a74d82616814f76a3aeb847",
+    "summary": "A web dashboard built with Next.js 15, TypeScript, and Tailwind that aggregates OMS, WMS, and LMS microservice APIs into a single interface.",
+    "category": "Web App"
+  },
+  "ruyx/ETFNEXO": {
+    "sha": "386c834576e6382bbd8ac23efe495060c105e04e",
+    "summary": "agregador especializado de datos de ETFs europeos.",
+    "category": "API / Backend"
+  },
+  "GBTP/TapTapProxy": {
+    "sha": "b3f57c3cac088f5cbb3c4b8e9953d781e2c12ad1",
+    "summary": "TapTap 云引擎反向代理，提供低延迟 API 访问并隐藏源站 IP。",
+    "category": "DevOps / Infra"
+  },
+  "heyflora-ai/bulk-protocol-marketing": {
+    "sha": "8954cb6d87cf93f706a3b0b89444bcfe37b3a4df",
+    "summary": "A web site built with Next.js that can be edited by non-developers using Claude Code for guidance.",
+    "category": "Web App"
+  },
+  "torad-labs/aisdk-kotlin": {
+    "sha": "d4b5c2084124a019d16c88d3304a8d62adfadb0a",
+    "summary": "A Kotlin Multiplatform library providing AI agent, tool, and model abstractions for Android, iOS, JVM, and backend use.",
+    "category": "Library / SDK"
+  },
+  "DudeAint/brownbear": {
+    "sha": "14926dce4de5d111c748a1c52c68ffa77f0ced7a",
+    "summary": "BrownBear is an iOS browser that runs userscripts with background execution, crontab scheduling, and Chrome extensions.",
+    "category": "Web App"
+  },
+  "dmotylev/magetui": {
+    "sha": "a6511b3bf30a41c73fd51755b35b75ee24606e67",
+    "summary": "magetui renders mage build progress as a live dependency tree with spinners, timers, and output replay.",
+    "category": "CLI / Tooling"
+  },
+  "fricker-studios/stele-db": {
+    "sha": "b005cd4d1236883a507aad3948685c20bad2c766",
+    "summary": "A Rust‑based analytical database that stores every fact append‑only with valid and system timestamps for full auditability.",
+    "category": "Data / ML"
+  },
+  "nunofyobiz/effect-extras": {
+    "sha": "2388c63daa934578a719020dab17a481d28c0b9c",
+    "summary": "Augmentation to modules from Effect - filling gaps, providing convenience wrappers, etc. These are universal data structure manipulations, not specific to any app's business logic or data model.",
+    "category": "Library / SDK"
+  },
+  "KirkForge/PicoSentry": {
+    "sha": "e2b48a40fd4e6ec3e9a7ff53461ed776248eb2cf",
+    "summary": "PicoSentry is a deterministic, offline supply‑chain scanner for npm, PyPI, Go, Cargo, Maven, RubyGems, and NuGet, with optional kernel‑sandbox enforcement.",
+    "category": "CLI / Tooling"
+  },
+  "maximilian-sh/hy350max-badbox-removal": {
+    "sha": "f04a666213407869f98beb75bcb66258c3f92fe8",
+    "summary": "Reproducible BADBOX 2.0 malware removal for the Magcubic HY350 Max projector (Allwinner H726, Android 14). Findings + recipe + IOCs. No firmware binary distributed.",
+    "category": "Mobile"
+  },
+  "neuroticsasquat-ch/upcoming-movies-backend": {
+    "sha": "a87151854451c3f0f197cca01b144e6105805d91",
+    "summary": "FastAPI backend for tracking upcoming movies, using async SQLAlchemy, Alembic migrations, and Dockerized deployment.",
+    "category": "API / Backend"
+  },
+  "ricalanis/scrubdata-hackathon": {
+    "sha": "b12b48ee1eabf53ff128337e6089628a5e5edc79",
+    "summary": "ScrubData cleans messy data files with a small local model, providing reversible, privacy‑preserving transformations.",
+    "category": "Web App"
+  },
+  "adjcjh777/dream-customs-build-small": {
+    "sha": "3f8f86ec0920a04a35d337162a1e2d13bad1d6af",
+    "summary": "Dream QA is a Gradio web app that turns user‑submitted dream fragments into a morning ticket with a grounded question and a quick action tip.",
+    "category": "Web App"
+  },
+  "LonelyGuy-SE1/Project-Halide": {
+    "sha": "a97a38c68f0db63d853367ee165a34a81defbbaf",
+    "summary": "A Film Negative and Development Analyzer.",
+    "category": "Other"
+  },
+  "tinfoilsh/vllm-cc-opt": {
+    "sha": "0a1c5034f5e4fe736db672010cda33d9d850f87e",
+    "summary": "vLLM is a high-performance library for fast, low-cost LLM inference and serving across diverse hardware.",
+    "category": "Library / SDK"
+  },
+  "sk2andy/macpack": {
+    "sha": "d5e054acf89410605cc7978878fe18097898db31",
+    "summary": "macpack is a CLI that synchronizes a single manifest across Homebrew, Mac App Store, npm, pnpm, bun, and uv packages for macOS.",
+    "category": "CLI / Tooling"
+  },
+  "nE0sIghT/langrisser-5-translation": {
+    "sha": "91c8c6646cdb493ffd579445ea1b426debaf7469",
+    "summary": "Toolkit to extract, translate, and repack Langrisser V PS1 text into English or other languages.",
+    "category": "CLI / Tooling"
+  },
+  "arturormk/cardputer-adv-indi-controller": {
+    "sha": "3d2f05c911c5bde5f060fbfd5df1b9572e59b19b",
+    "summary": "Handheld Wi-Fi INDI controller for astronomical equipment, built for the M5Stack Cardputer ADV",
+    "category": "Other"
+  },
+  "comp-med-research/PrivateMD": {
+    "sha": "ff3feab83133a1857d3893db882d345af03d2e85",
+    "summary": "",
+    "category": "Other"
+  },
+  "Vickyrrrrrr/vyber-cyber": {
+    "sha": "d27a7d2b7eaf10a9344545efcce21524174ca34c",
+    "summary": "Vyber is a self‑healing cyber‑range that runs a Red‑Agent/Blue‑Agent loop to find, patch, and re‑test vulnerabilities in an isolated sandbox.",
+    "category": "AI / Agents"
+  },
+  "DavidChen206265/freekill-web": {
+    "sha": "def531bf47ff38c58f97a801fc51081de97c1fe5",
+    "summary": "A web client for the open‑source Three Kingdoms card game that runs the original Lua engine in the browser and syncs with the C++ server via a Node gateway.",
+    "category": "Web App"
+  },
+  "JavRedstone/eyas": {
+    "sha": "b72c29f77882cb24d67887d3a629aada10544c07",
+    "summary": "Eyas is an on-device security camera agent that tracks people, detects events, and uses an LLM to log and summarize suspicious activity.",
+    "category": "AI / Agents"
+  },
+  "sanjuhs/build-small-hackathon-v1": {
+    "sha": "5ba01e42715309b1224b2e18343fdd3a3cde9172",
+    "summary": "Fire Boy MiniCPM-V 4.6 VLA virtual pet by Sanjay Prasad H S for Build Small Hackathon",
+    "category": "Other"
+  },
+  "N-45div/PacketCourt": {
+    "sha": "095d558bee8369065466b18e65812d2a15aa8863",
+    "summary": "",
+    "category": "Other"
+  },
+  "hugogu/octopus-llm": {
+    "sha": "807d81e7f210ce3272f62caeaa79a63fac8ed331",
+    "summary": "Octopus LLM lets users send one prompt to multiple LLMs simultaneously, streaming side‑by‑side results for comparison.",
+    "category": "CLI / Tooling"
+  },
+  "LocalT0aster/my-vagrant-runner": {
+    "sha": "dc504c1e7ac5a908d2e30147431282b7441a397f",
+    "summary": "A Vagrant/Libvirt VM that provisions a self‑hosted GitHub Actions runner with Docker and Ansible.",
+    "category": "CLI / Tooling"
+  },
+  "AlexzPurewoko/laravel-octane-l42x": {
+    "sha": "aeb76f2705991b8b93e5bc5a713a2d5dd9324c79",
+    "summary": "",
+    "category": "Other"
+  },
+  "0xPraedico/KERNEL-95": {
+    "sha": "9708e36425d9692314dfe74851b9c88572a4cacb",
+    "summary": "Explore a retro OS desktop to solve a forensic horror mystery",
+    "category": "Other"
+  },
+  "KrelinnBios/PrismSelf": {
+    "sha": "0d0801f96b9854be72a9602d52af41995d5993ea",
+    "summary": "PrismSelf 是一个以网页形式呈现的自我探索与科普项目，内容聚焦性别理论、心理概念与人际关系，供学习、整理和个人理解辅助使用。",
+    "category": "Web App"
+  }
+}
