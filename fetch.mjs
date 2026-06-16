@@ -27,9 +27,12 @@ const OR_MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-oss-20b:free";
 const OUT = "public/feed.json";
 const CACHE = ".cache/summaries.json"; // repo -> { sha, summary }
 const PER_PAGE = 100;      // GitHub search max page size
-const PAGES = TOKEN ? Number(process.env.PAGES || 6) : 1; // paginate when authed
+const PAGES = TOKEN ? Number(process.env.PAGES || 3) : 1; // paginate when authed
 const MAX_AGE_DAYS = 14;   // only show repos created within this many days
-const MAX_SUMMARIES = 80;  // cap OpenRouter calls per run (free-tier friendly)
+const MAX_SUMMARIES = Number(process.env.MAX_SUMMARIES || 30); // OpenRouter calls/run
+const TIME_BUDGET_MS = Number(process.env.TIME_BUDGET_MS || 300_000); // hard stop → always deploy
+const START = Date.now();
+const overBudget = () => Date.now() - START > TIME_BUDGET_MS;
 
 // Detection fingerprints — the whole strategy lives here. Tune freely.
 const SOURCES = [
@@ -264,6 +267,7 @@ async function main() {
     for (const q of source.queries) {
       let total = 0;
       for (let page = 1; page <= PAGES; page++) {
+        if (overBudget()) break;
         try {
           const items = await ghSearchCommits(q, page);
           for (const item of items) {
@@ -307,6 +311,8 @@ async function main() {
   } catch { /* first run — no prior feed */ }
 
   for (const [fullName, c] of candidates) {
+    // Hard time budget: stop enriching/summarizing so the job always deploys.
+    if (overBudget()) { console.log("  ⏱ time budget reached — proceeding to write"); break; }
     const repo = await ghRepo(fullName);
     await sleep(150);
     if (!repo || !repo.created_at) continue;
