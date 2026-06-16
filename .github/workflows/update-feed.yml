@@ -1,0 +1,57 @@
+name: Update feed
+
+# Polls GitHub every ~10 minutes and publishes feed.json to GitHub Pages.
+# (GitHub's cron is best-effort; intervals under ~5 min are unreliable.)
+on:
+  push:
+    branches: [main]   # deploy immediately on every push
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: # lets you trigger a refresh manually from the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # Persist the accumulated feed + summary cache across runs so the feed
+      # grows over time instead of resetting each run. Rolling key + restore-keys
+      # means each run restores the latest cache and saves a fresh one.
+      - name: Restore feed store
+        uses: actions/cache@v4
+        with:
+          path: |
+            public/feed.json
+            .cache
+          key: radar-store-${{ github.run_id }}
+          restore-keys: radar-store-
+
+      - name: Fetch latest AI repos
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL }}
+        run: node fetch.mjs
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+      - id: deploy
+        uses: actions/deploy-pages@v4
