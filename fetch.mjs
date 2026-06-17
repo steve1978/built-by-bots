@@ -1,9 +1,15 @@
-// fetch.mjs — polls GitHub's commit-search API for AI-tool fingerprints,
-// keeps only newly-created repos, summarizes each via a free OpenRouter model,
-// and writes public/feed.json for the static frontend.
+// fetch.mjs — finds GitHub repos CREATED in the last ~24h (repository search,
+// filtered by creation date), verifies each was built with Claude Code or
+// OpenAI Codex by scanning its recent commit messages for their fingerprints,
+// summarizes + categorizes each via a free OpenRouter model, and accumulates
+// them forever into public/feed.json for the static frontend.
+//
+// Why creation-date search (not commit search): commit search ranks by recent
+// commit, so brand-new repos drown under established projects that use these
+// tools daily. Searching by `created:` excludes old repos by definition.
 //
 // Environment variables (all optional, but recommended):
-//   GITHUB_TOKEN        – lifts GitHub rate limits (search + repo lookups)
+//   GITHUB_TOKEN        – lifts GitHub rate limits (search + commit lookups)
 //   OPENROUTER_API_KEY  – enables AI summaries (falls back to description if unset)
 //   OPENROUTER_MODEL    – override the free model (default below)
 
@@ -25,39 +31,28 @@ const OR_KEY = process.env.OPENROUTER_API_KEY || "";
 const OR_MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-oss-20b:free";
 
 const OUT = "public/feed.json";
-const CACHE = ".cache/summaries.json"; // repo -> { sha, summary }
+const CACHE = ".cache/summaries.json"; // repo -> { summary, category }
+const CHECKED = ".cache/checked.json"; // repo -> { pushedAt, ai } — avoid re-checking
 const PER_PAGE = 100;      // GitHub search max page size
-const PAGES = TOKEN ? Number(process.env.PAGES || 3) : 1; // paginate when authed
-const MAX_AGE_DAYS = 14;   // only show repos created within this many days
+const DISCOVERY_HOURS = Number(process.env.DISCOVERY_HOURS || 24); // "new" window
+const SEARCH_PAGES = Number(process.env.SEARCH_PAGES || 10);       // up to 1000 results
+const COMMITS_PER_REPO = 15;  // recent commits to scan for a fingerprint
+const MAX_CHECKS = Number(process.env.MAX_CHECKS || 500); // commit-verify calls/run (rate-limit budget)
 const MAX_SUMMARIES = Number(process.env.MAX_SUMMARIES || 30); // OpenRouter calls/run
-const TIME_BUDGET_MS = Number(process.env.TIME_BUDGET_MS || 300_000); // hard stop → always deploy
+const TIME_BUDGET_MS = Number(process.env.TIME_BUDGET_MS || 360_000); // hard stop → always deploy
 const START = Date.now();
 const overBudget = () => Date.now() - START > TIME_BUDGET_MS;
 
-// Detection fingerprints — the whole strategy lives here. Tune freely.
+// Source list for the frontend (the actual detection is the regexes below).
 const SOURCES = [
-  {
-    id: "claude",
-    label: "Claude Code",
-    // "Co-Authored-By: Claude" is the stable marker every Claude Code variant
-    // shares (including "Claude Opus 4.8 (1M context)"). "Generated with Claude
-    // Code" is rarer, so its recent results reach further back and surface
-    // smaller/newer repos the broad firehose query buries. The union of both
-    // windows catches more genuinely-new repos.
-    queries: [
-      `"Co-Authored-By: Claude"`,
-      `"Generated with Claude Code"`,
-    ],
-  },
-  {
-    id: "codex",
-    label: "OpenAI Codex",
-    // Verified marker left by Codex's cloud agent (~14k commits indexed).
-    queries: [
-      `"Co-authored-by: openai-codex"`,
-    ],
-  },
+  { id: "claude", label: "Claude Code" },
+  { id: "codex", label: "OpenAI Codex" },
 ];
+
+// Commit-message fingerprints. "Co-Authored-By: Claude" is the stable marker
+// every Claude Code variant shares (incl. "Claude Opus 4.8 (1M context)").
+const CLAUDE_FP = /Co-Authored-By:\s*Claude/i;
+const CODEX_FP = /Co-authored-by:\s*openai-codex/i;
 
 // Fixed taxonomy so categories stay consistent and filterable.
 const CATEGORIES = [
@@ -129,20 +124,43 @@ async function fetchRetry(url, opts = {}, { tries = 5, base = 15000, label = "" 
   }
 }
 
-async function ghSearchCommits(q, page) {
-  const url =
-    `https://api.github.com/search/commits` +
-    `?q=${encodeURIComponent(q)}&sort=committer-date&order=desc` +
-    `&per_page=${PER_PAGE}&page=${page}`;
-  const res = await fetchRetry(url, { headers: ghHeaders() }, { label: "search" });
-  if (!res.ok) throw new Error(`search ${res.status}: ${(await res.text()).slice(0, 160)}`);
-  return (await res.json()).items || [];
+// Repos created within the discovery window, most-recently-updated first
+// (active = more likely to be a real, in-progress project). The search result
+// already carries the metadata we need, so no per-repo lookup is required.
+async function searchNewRepos() {
+  const since = new Date(Date.now() - DISCOVERY_HOURS * 3600_000).toISOString().slice(0, 19) + "Z";
+  const q = `created:>=${since} fork:false`;
+  const out = [];
+  for (let page = 1; page <= SEARCH_PAGES; page++) {
+    if (overBudget()) break;
+    const url =
+      `https://api.github.com/search/repositories` +
+      `?q=${encodeURIComponent(q)}&sort=updated&order=desc&per_page=${PER_PAGE}&page=${page}`;
+    const res = await fetchRetry(url, { headers: ghHeaders() }, { label: "reposearch" });
+    if (!res.ok) { console.error(`  reposearch ${res.status}`); break; }
+    const items = (await res.json()).items || [];
+    out.push(...items);
+    if (items.length < PER_PAGE) break;
+    await sleep(2500);
+  }
+  return out;
 }
 
-async function ghRepo(fullName) {
-  const res = await fetch(`https://api.github.com/repos/${fullName}`, { headers: ghHeaders() });
+// Scan a repo's recent commits for an AI fingerprint. Returns "claude" | "codex" | null.
+async function verifyAI(fullName) {
+  const res = await fetchRetry(
+    `https://api.github.com/repos/${fullName}/commits?per_page=${COMMITS_PER_REPO}`,
+    { headers: ghHeaders() }, { label: "commits", tries: 2, base: 4000 }
+  );
   if (!res.ok) return null;
-  return res.json();
+  let commits; try { commits = await res.json(); } catch { return null; }
+  if (!Array.isArray(commits)) return null;
+  for (const c of commits) {
+    const msg = c.commit?.message || "";
+    if (CLAUDE_FP.test(msg)) return "claude";
+    if (CODEX_FP.test(msg)) return "codex";
+  }
+  return null;
 }
 
 async function ghReadme(fullName) {
@@ -201,9 +219,10 @@ async function summarize(fullName, readme, fallback, language) {
   }
 }
 
-async function loadCache() {
-  try { return JSON.parse(await readFile(CACHE, "utf8")); } catch { return {}; }
+async function loadJSON(path) {
+  try { return JSON.parse(await readFile(path, "utf8")); } catch { return {}; }
 }
+const loadCache = () => loadJSON(CACHE);
 
 // Offline: re-apply categories to the existing feed without hitting any API.
 // Useful for quick local iteration on the category rules. Run: node fetch.mjs --recat
@@ -261,92 +280,68 @@ async function recategorizeLLM() {
 async function main() {
   if (process.argv.includes("--recat")) return recategorize();
   if (process.argv.includes("--recat-llm")) return recategorizeLLM();
-  // 1. Collect candidate repos from commit search.
-  const candidates = new Map(); // full_name -> { source, sha, date }
-  for (const source of SOURCES) {
-    for (const q of source.queries) {
-      let total = 0;
-      for (let page = 1; page <= PAGES; page++) {
-        if (overBudget()) break;
-        try {
-          const items = await ghSearchCommits(q, page);
-          for (const item of items) {
-            const repo = item.repository?.full_name;
-            if (!repo || item.repository?.fork) continue;
-            const date = item.commit?.committer?.date || item.commit?.author?.date;
-            const prev = candidates.get(repo);
-            if (!prev || new Date(date) > new Date(prev.date)) {
-              candidates.set(repo, { source: source.id, sha: item.sha, date });
-            }
-          }
-          total += items.length;
-          if (items.length < PER_PAGE) break; // no more pages
-        } catch (err) {
-          console.error(`  ✗ ${source.id} "${q}" p${page}: ${err.message}`);
-          break;
-        }
-        await sleep(8000); // steady pacing avoids tripping the secondary limit
-      }
-      console.log(`  ✓ ${source.id}: "${q}" → ${total} hits`);
-    }
-  }
-  console.log(`\n${candidates.size} unique candidate repos. Enriching…`);
 
-  // 2. Enrich with creation date, filter to newly-created repos, summarize.
   const cache = await loadCache();
-  const cutoff = Date.now() - MAX_AGE_DAYS * 86400_000;
-  let summaries = 0;
+  const checked = await loadJSON(CHECKED);
 
-  // Seed from the previous feed so the list accumulates over many runs.
-  // Keep prior entries that are still within the "new" window.
+  // Accumulate forever: start from everything we've ever found, drop nothing.
   const merged = new Map(); // full_name -> entry
   try {
     const prev = JSON.parse(await readFile(OUT, "utf8"));
-    for (const e of prev.entries || []) {
-      if (e.createdAt && new Date(e.createdAt).getTime() >= cutoff) {
-        merged.set(e.repo, e);
-      }
-    }
+    for (const e of prev.entries || []) merged.set(e.repo, e);
     console.log(`Carried over ${merged.size} repos from the previous feed.`);
   } catch { /* first run — no prior feed */ }
 
-  for (const [fullName, c] of candidates) {
-    // Hard time budget: stop enriching/summarizing so the job always deploys.
-    if (overBudget()) { console.log("  ⏱ time budget reached — proceeding to write"); break; }
-    const repo = await ghRepo(fullName);
-    await sleep(150);
-    if (!repo || !repo.created_at) continue;
-    if (new Date(repo.created_at).getTime() < cutoff) continue; // not "new"
+  // 1. Discover repos created in the last DISCOVERY_HOURS.
+  const repos = await searchNewRepos();
+  console.log(`${repos.length} repos created in the last ${DISCOVERY_HOURS}h. Verifying authorship…`);
 
-    const fallback = repo.description || "";
-    const language = repo.language || "";
-    let summary = fallback;
-    let category = categorize(fallback, language);
-    const cached = cache[fullName];
-    if (cached && cached.sha === c.sha) {
+  // 2. Verify each unseen/updated repo via its commits; keep AI-built ones.
+  let checks = 0, aiFound = 0, summaries = 0;
+  for (const r of repos) {
+    if (overBudget()) { console.log("  ⏱ time budget reached — proceeding to write"); break; }
+    const name = r.full_name;
+    if (merged.has(name)) continue;                 // already in the feed — keep it
+    const prev = checked[name];
+    if (prev && !prev.ai && prev.pushedAt >= r.pushed_at) continue; // unchanged non-AI — skip
+    if (checks >= MAX_CHECKS) continue;             // stay within the rate-limit budget
+
+    const source = await verifyAI(name);
+    checked[name] = { pushedAt: r.pushed_at, ai: !!source };
+    checks++;
+    await sleep(90);
+    if (!source) continue;
+    aiFound++;
+
+    const language = r.language || "";
+    const fallback = r.description || "";
+    let summary = fallback, category = categorize(fallback, language);
+    const cached = cache[name];
+    if (cached) {
       summary = cached.summary;
-      category = cached.category || categorize(summary, language); // backfill old cache
+      category = cached.category || categorize(summary, language);
     } else if (summaries < MAX_SUMMARIES) {
-      const readme = await ghReadme(fullName);
-      ({ summary, category } = await summarize(fullName, readme, fallback, language));
-      cache[fullName] = { sha: c.sha, summary, category };
+      const readme = await ghReadme(name);
+      ({ summary, category } = await summarize(name, readme, fallback, language));
+      cache[name] = { summary, category };
       summaries++;
-      await sleep(1500); // stay under OpenRouter free per-minute limits
+      await sleep(1200);
     }
 
-    merged.set(fullName, {
-      source: c.source,
-      repo: fullName,
-      url: repo.html_url,
-      owner: repo.owner?.login || "",
-      avatar: repo.owner?.avatar_url || "",
+    merged.set(name, {
+      source,
+      repo: name,
+      url: r.html_url,
+      owner: r.owner?.login || "",
+      avatar: r.owner?.avatar_url || "",
       summary,
       category,
       language,
-      stars: repo.stargazers_count || 0,
-      createdAt: repo.created_at,
-      date: c.date,
+      stars: r.stargazers_count || 0,
+      createdAt: r.created_at,
+      date: r.pushed_at,
     });
+    console.log(`  + [${source}] ${name}`);
   }
 
   // Backfill a category on any carried-over entry that predates this feature.
@@ -360,9 +355,9 @@ async function main() {
 
   const feed = {
     generatedAt: new Date().toISOString(),
-    maxAgeDays: MAX_AGE_DAYS,
+    discoveryHours: DISCOVERY_HOURS,
     count: entries.length,
-    sources: SOURCES.map(({ id, label }) => ({ id, label })),
+    sources: SOURCES,
     categories: CATEGORIES,
     entries,
   };
@@ -371,7 +366,9 @@ async function main() {
   await writeFile(OUT, JSON.stringify(feed, null, 2));
   await mkdir(dirname(CACHE), { recursive: true });
   await writeFile(CACHE, JSON.stringify(cache, null, 2));
-  console.log(`\nWrote ${entries.length} new repos (${summaries} summarized) → ${OUT}`);
+  await writeFile(CHECKED, JSON.stringify(checked, null, 2));
+  console.log(`\nChecked ${checks} repos, found ${aiFound} new AI-built (${summaries} summarized).`);
+  console.log(`Feed now holds ${entries.length} repos → ${OUT}`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

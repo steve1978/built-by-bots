@@ -592,5 +592,17 @@
     "sha": "0d0801f96b9854be72a9602d52af41995d5993ea",
     "summary": "PrismSelf 是一个以网页形式呈现的自我探索与科普项目，内容聚焦性别理论、心理概念与人际关系，供学习、整理和个人理解辅助使用。",
     "category": "Web App"
+  },
+  "piaoria/qualifications_helper": {
+    "summary": "A PWA that lets job seekers track job postings and certification exam dates with D‑day alerts and offline support.",
+    "category": "Web App"
+  },
+  "05cherry/aml-llm-report-prototype": {
+    "summary": "A CLI prototype that uses an LLM to generate AML review reports from dummy transaction JSON, outputting Markdown with evidence and risk levels.",
+    "category": "CLI / Tooling"
+  },
+  "jmyoo-crypto/content-method-guide": {
+    "summary": "",
+    "category": "Other"
   }
 }

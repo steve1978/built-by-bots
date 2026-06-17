@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-16T13:57:46.147Z",
-  "maxAgeDays": 14,
-  "count": 146,
+  "generatedAt": "2026-06-17T07:50:45.315Z",
+  "discoveryHours": 24,
+  "count": 151,
   "sources": [
     {
       "id": "claude",
@@ -27,6 +27,71 @@
     "Other"
   ],
   "entries": [
+    {
+      "source": "claude",
+      "repo": "frankkn/XiaoGuai",
+      "url": "https://github.com/frankkn/XiaoGuai",
+      "owner": "frankkn",
+      "avatar": "https://avatars.githubusercontent.com/u/37926170?v=4",
+      "summary": "",
+      "category": "Other",
+      "language": "CSS",
+      "stars": 0,
+      "createdAt": "2026-06-17T07:49:38Z",
+      "date": "2026-06-17T07:49:49Z"
+    },
+    {
+      "source": "claude",
+      "repo": "05cherry/aml-llm-report-prototype",
+      "url": "https://github.com/05cherry/aml-llm-report-prototype",
+      "owner": "05cherry",
+      "avatar": "https://avatars.githubusercontent.com/u/66504988?v=4",
+      "summary": "A CLI prototype that uses an LLM to generate AML review reports from dummy transaction JSON, outputting Markdown with evidence and risk levels.",
+      "category": "CLI / Tooling",
+      "language": "Python",
+      "stars": 0,
+      "createdAt": "2026-06-17T05:19:24Z",
+      "date": "2026-06-17T07:49:50Z"
+    },
+    {
+      "source": "claude",
+      "repo": "jaehyuk-choi-KICPA/KICPA_CAREER_HUB_SITE",
+      "url": "https://github.com/jaehyuk-choi-KICPA/KICPA_CAREER_HUB_SITE",
+      "owner": "jaehyuk-choi-KICPA",
+      "avatar": "https://avatars.githubusercontent.com/u/280886231?v=4",
+      "summary": "빅4회계법인 및 로컬회계법인의 수습공인회계사(기합자 포함) 및 일반 회계법인 입사자를 위한 채용공고 / 업계 뉴스 / 각 대형 법인의 인사이트 기사 링크 등을 제공하는 홈페이지 제작",
+      "category": "Other",
+      "language": "Python",
+      "stars": 0,
+      "createdAt": "2026-06-16T14:51:19Z",
+      "date": "2026-06-17T07:49:49Z"
+    },
+    {
+      "source": "claude",
+      "repo": "jmyoo-crypto/content-method-guide",
+      "url": "https://github.com/jmyoo-crypto/content-method-guide",
+      "owner": "jmyoo-crypto",
+      "avatar": "https://avatars.githubusercontent.com/u/266008950?v=4",
+      "summary": "",
+      "category": "Other",
+      "language": "HTML",
+      "stars": 0,
+      "createdAt": "2026-06-16T10:41:08Z",
+      "date": "2026-06-17T07:49:49Z"
+    },
+    {
+      "source": "claude",
+      "repo": "piaoria/qualifications_helper",
+      "url": "https://github.com/piaoria/qualifications_helper",
+      "owner": "piaoria",
+      "avatar": "https://avatars.githubusercontent.com/u/155702981?v=4",
+      "summary": "A PWA that lets job seekers track job postings and certification exam dates with D‑day alerts and offline support.",
+      "category": "Web App",
+      "language": "JavaScript",
+      "stars": 0,
+      "createdAt": "2026-06-16T09:07:10Z",
+      "date": "2026-06-17T07:49:50Z"
+    },
     {
       "source": "codex",
       "repo": "tinfoilsh/vllm-cc-opt",
