@@ -1,11 +1,18 @@
-# AI Repo Radar
+# Built by Bots
 
-A live feed of brand-new public GitHub repositories built with **Claude Code** and **OpenAI Codex** — shown with a link and a short summary as they ship.
+A live feed of brand-new public GitHub repositories built with **Claude Code** and **OpenAI Codex** — shown with a link, an AI-written summary, and a category, as they're created.
 
-It works by searching GitHub's commit data for the fingerprints these tools leave behind:
+How it works (the order matters):
 
-- **Claude Code** → the `Generated with Claude Code` / `Co-Authored-By: Claude` commit trailer
-- **OpenAI Codex** → Codex co-author signatures
+1. **Discover by creation date** — query GitHub's *repository* search for repos
+   `created:` in the last 24h, most-recently-updated first. Filtering on creation
+   date means established repos are excluded by definition (commit search, by
+   contrast, ranks by recent commit and buries new repos under big active projects).
+2. **Verify authorship** — scan each repo's recent commit messages for the
+   tool fingerprints:
+   - **Claude Code** → `Co-Authored-By: Claude` (any variant)
+   - **OpenAI Codex** → `Co-authored-by: openai-codex`
+3. **Accumulate forever** — found repos are kept permanently, so the feed grows.
 
 No database and no backend server: a scheduled job writes a `feed.json`, and a static page renders it. That means it can be hosted **free** on GitHub Pages.
 
@@ -23,9 +30,13 @@ node serve.mjs   # → http://localhost:5173
 
 | Variable | Purpose | Without it |
 |---|---|---|
-| `GITHUB_TOKEN` | GitHub search + repo lookups at full rate | Codex queries get throttled (403); low volume |
-| `OPENROUTER_API_KEY` | AI one-line summaries from each README | Falls back to the repo's own description |
-| `OPENROUTER_MODEL` | Override the free model | Defaults to `meta-llama/llama-3.3-70b-instruct:free` |
+| `GITHUB_TOKEN` | repo search + commit verification at full rate | Heavy throttling; very low volume |
+| `OPENROUTER_API_KEY` | AI one-line summaries + categories from each README | Falls back to the repo's own description |
+| `OPENROUTER_MODEL` | Override the free model | Defaults to `openai/gpt-oss-20b:free` |
+
+Other knobs (env vars): `DISCOVERY_HOURS` (default 24), `SEARCH_PAGES` (default 10,
+up to 1000 repos), `MAX_CHECKS` (commit-verify calls per run), `MAX_SUMMARIES`,
+`TIME_BUDGET_MS` (hard stop so the job always deploys).
 
 ```powershell
 # Windows PowerShell
@@ -42,11 +53,12 @@ node fetch.mjs
 
 ## How the feed stays fresh
 
-- Only repos **created in the last 14 days** appear (`MAX_AGE_DAYS` in `fetch.mjs`).
-- Each run **accumulates** — it merges new finds with the previous `feed.json`
-  and drops anything older than the window, so the feed grows instead of resetting.
-- Summaries are **cached** (`.cache/summaries.json`) keyed by commit SHA, so the
-  same repo isn't re-summarized every run.
+- Discovery only adds repos **created in the last `DISCOVERY_HOURS`** (default 24).
+- Found repos are **kept forever** — each run merges new finds into `feed.json`
+  and never drops anything, so the site builds up over time.
+- Summaries are **cached** (`.cache/summaries.json`); a **checked-cache**
+  (`.cache/checked.json`) records which repos were already verified so they
+  aren't re-scanned every run (re-checked only if they receive new pushes).
 
 ## Deploy free on GitHub Pages
 
@@ -61,15 +73,18 @@ node fetch.mjs
 
 ## Tuning detection
 
-All detection logic is the `SOURCES` array in [`fetch.mjs`](fetch.mjs).
-Add or refine the fingerprint queries there.
+The fingerprint regexes (`CLAUDE_FP`, `CODEX_FP`) in [`fetch.mjs`](fetch.mjs)
+are the whole detection rule — edit them to broaden or tighten what counts.
 
-## Known limitations / next steps
+## Known limitations
 
-- **Coverage:** commit search only indexes default branches and is sampled, so
-  this catches most — not every — repo. Add more fingerprint queries or paginate
-  deeper in `SOURCES` / `fetch.mjs` to widen the net (needs a token).
-- **Volume:** without a `GITHUB_TOKEN`, only one Claude query page comes through
-  before the secondary rate limit trips. With a token (always present in CI),
-  Codex detection works and you can pull more pages for a fuller feed.
-- **Tuning:** `MAX_AGE_DAYS` controls how "new" a repo must be to appear.
+- **Tool-specific:** this only catches repos whose commits carry the Claude Code
+  or Codex fingerprint. Repos built with other AI tools (Cursor, Copilot, Aider…),
+  or where the author stripped the trailer, won't match. In practice ~2% of newly
+  created repos carry these fingerprints — so expect dozens per day, not hundreds.
+- **Search cap:** repository search returns at most 1000 results per run, so each
+  run sees the 1000 most-recently-updated new repos. Running often + accumulating
+  covers the rest over time.
+- **No commit messages in the firehose:** GitHub's public event stream (GH Archive)
+  no longer includes commit messages, which is why per-repo commit verification is
+  required rather than scanning the firehose directly.
