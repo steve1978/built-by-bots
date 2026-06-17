@@ -18,9 +18,8 @@
     "summary": "Provides fast, efficient inference and serving for large language models with advanced optimizations and flexible deployment options."
   },
   "Bigstonks1/Snap2Sim": {
-    "sha": "c5339c8bc42899dd16f888ee6c40beb3e8fc9072",
-    "summary": "",
-    "category": "Other"
+    "summary": "Snap2Sim turns a photo of a hardware part into a narrated 3D cutaway, showing internal mechanisms and motion.",
+    "category": "Web App"
   },
   "smpdl/telltale": {
     "sha": "a552907d62f98230fab50106263b766c3dc0c6cf",
@@ -67,9 +66,8 @@
     "summary": "Manages, installs, and syncs curated AI coding agent capability bundles from a registry into local agents."
   },
   "Sahil170595/huggingface-RTSI": {
-    "sha": "c14726095cab094dbea28f252b46ef8a652159ae",
     "summary": "Quantsafe Certifier for testing whether quantized models are prone to be jailbroken and generate unsafe outputs.",
-    "category": "Other"
+    "category": "Security"
   },
   "BrettRey/kinds-as-projectibility-profiles": {
     "sha": "791669f6a293b8a17266e2bf0dec35386a5c504b",
@@ -162,13 +160,12 @@
     "category": "Web App"
   },
   "Sullynobugz/wid": {
-    "sha": "9aa4a024d163c35910116cc99f8fc3f5da17ef07",
-    "summary": ""
+    "summary": "A minimal Next.js starter template with automatic font optimization and easy Vercel deployment.",
+    "category": "Web App"
   },
   "Abinithishkumarprabakaran/astro_avatar": {
-    "sha": "5d2a8d2acd8643769ea8e459b88b2001f1e1eb92",
-    "summary": "",
-    "category": "Other"
+    "summary": "A browser‑only Vedic astrology clock that updates planetary positions every second using a pure‑TypeScript engine and renders a four‑layer SVG wheel.",
+    "category": "Web App"
   },
   "simonXPO/martin-buenger-architekt": {
     "sha": "422fd05ddf5023a014d549a98779e4cc2eb05c00",
@@ -244,8 +241,8 @@
     "summary": "Recreates a high‑fidelity AI portfolio dashboard with ten interactive workspaces using a custom design system."
   },
   "yxthu27/Clipless": {
-    "sha": "67c9e610b4cbfc558cb3f9c78cf851b57190b2fa",
-    "summary": "Captures screen regions to clipboard with two keystrokes, supports OCR, no files, fully offline."
+    "summary": "Captures screen regions to clipboard with two keystrokes, supports OCR, no files, fully offline.",
+    "category": "Productivity"
   },
   "anooppattern/edgevision-pro": {
     "sha": "2ebfe163efe982a0ee93886351b02b1a90b9bf5c",
@@ -257,8 +254,8 @@
     "summary": "천명회귀 · Fatebound — 터미널에서 즐기는 무협 회귀 로그라이트 오토배틀러 (Textual TUI). Source-available, noncommercial."
   },
   "hugooole/metronome_app": {
-    "sha": "47b86480747d587a4874e3d302d041d59aaf1813",
-    "summary": ""
+    "summary": "A Flutter metronome app delivering precise timing with native audio scheduling and drift‑free beat calculation.",
+    "category": "Mobile"
   },
   "devclone20/agentsview": {
     "sha": "fd2d8441e3522621f5e45ce9c7919f13308ded88",
@@ -266,8 +263,8 @@
     "category": "Web App"
   },
   "sankhacooray/travel-sankhacooray-com": {
-    "sha": "3fb4be6ad13d0dfd9ded652b61f45670484633f4",
-    "summary": "Interactive world map of countries I've visited, shaded by frequency — travel.sankhacooray.com"
+    "summary": "Interactive world map of countries I've visited, shaded by frequency — travel.sankhacooray.com",
+    "category": "Web App"
   },
   "AlexShchuka/mirabilis": {
     "sha": "d35033cf91c57ab5fc590b19300ba1df301902bb",
@@ -289,14 +286,12 @@
     "category": "Web App"
   },
   "Dananty07/ACTIVIDAD-CLASE-EXTRA-POW-MIGUEL-VELIZ": {
-    "sha": "27d01fd67655710518a22b77c92d0c710c71d173",
     "summary": "Actividad de 3 puntos extra hecha en clase",
-    "category": "Other"
+    "category": "Education"
   },
   "codeit13/hiring": {
-    "sha": "fd7a64cff2f70abb754580a944d4fd96f6ba3c9e",
-    "summary": "",
-    "category": "Other"
+    "summary": "ThriveHR is an end‑to‑end hiring and onboarding platform for Axis Bank, using a single‑origin SPA that routes directly to microservices without an API gateway.",
+    "category": "Web App"
   },
   "dicetavo/goodlease-landing": {
     "sha": "294886323007fee893bf934f28b6c3ab0e14af69",
@@ -304,8 +299,7 @@
     "category": "Web App"
   },
   "polosesy/career": {
-    "sha": "2941e8443e9cc9250af2fee4908af5570c5870c6",
-    "summary": "",
+    "summary": "A minimal repository for a career-related project with no content.",
     "category": "Other"
   },
   "bandittfb/RUMI": {
@@ -414,9 +408,8 @@
     "category": "Web App"
   },
   "hellonecto-beep/fudosan-ai-journal": {
-    "sha": "eff27f5706a495cfaaccdce168ff82ecde37a32a",
     "summary": "不動産AIジャーナル — AIで不動産業務を変えた人たちの記録",
-    "category": "Other"
+    "category": "Web App"
   },
   "CNanninga/gift-certificate-manager": {
     "sha": "ce79ae3c37ae8e9c2a35a8e8530e1cb5bb4f73c7",
@@ -514,9 +507,8 @@
     "category": "Web App"
   },
   "LonelyGuy-SE1/Project-Halide": {
-    "sha": "a97a38c68f0db63d853367ee165a34a81defbbaf",
     "summary": "A Film Negative and Development Analyzer.",
-    "category": "Other"
+    "category": "CLI / Tooling"
   },
   "tinfoilsh/vllm-cc-opt": {
     "sha": "0a1c5034f5e4fe736db672010cda33d9d850f87e",
@@ -539,9 +531,8 @@
     "category": "Other"
   },
   "comp-med-research/PrivateMD": {
-    "sha": "ff3feab83133a1857d3893db882d345af03d2e85",
-    "summary": "",
-    "category": "Other"
+    "summary": "PrivateMD is a local, evidence‑grounded medical copilot that extracts and visualizes patient data from synthetic FHIR bundles, imaging metadata, and DNA CSVs to answer clinician queries with cited chart evidence.",
+    "category": "AI / Agents"
   },
   "Vickyrrrrrr/vyber-cyber": {
     "sha": "d27a7d2b7eaf10a9344545efcce21524174ca34c",
@@ -559,14 +550,12 @@
     "category": "AI / Agents"
   },
   "sanjuhs/build-small-hackathon-v1": {
-    "sha": "5ba01e42715309b1224b2e18343fdd3a3cde9172",
     "summary": "Fire Boy MiniCPM-V 4.6 VLA virtual pet by Sanjay Prasad H S for Build Small Hackathon",
-    "category": "Other"
+    "category": "Web App"
   },
   "N-45div/PacketCourt": {
-    "sha": "095d558bee8369065466b18e65812d2a15aa8863",
-    "summary": "",
-    "category": "Other"
+    "summary": "PacketCourt audits packaged‑food claims by comparing front‑label statements to back‑label evidence, producing traceable verdicts.",
+    "category": "Data / ML"
   },
   "hugogu/octopus-llm": {
     "sha": "807d81e7f210ce3272f62caeaa79a63fac8ed331",
@@ -604,5 +593,57 @@
   "jmyoo-crypto/content-method-guide": {
     "summary": "",
     "category": "Other"
+  },
+  "talqwerty/complaint-tracker": {
+    "summary": "A full‑stack customer complaint tracking system with a Next.js frontend and NestJS backend, using Prisma and SQLite.",
+    "category": "Web App"
+  },
+  "resmethrin/readcrew-tbcorporate-demo": {
+    "summary": "A Next.js demo showcasing a simple page with automatic font optimization and hot reloading.",
+    "category": "Web App"
+  },
+  "ofirm7/whaser": {
+    "summary": "Whaser lets users build and run AI agents that interact with WhatsApp via a conversational wizard and a managed dashboard.",
+    "category": "AI / Agents"
+  },
+  "frankkn/XiaoGuai": {
+    "summary": "A static Astro website showcasing a friendly dog named XiaoGuai, featuring photos, videos, and a daily schedule.",
+    "category": "Web App"
+  },
+  "jaehyuk-choi-KICPA/KICPA_CAREER_HUB_SITE": {
+    "summary": "빅4회계법인 및 로컬회계법인의 수습공인회계사(기합자 포함) 및 일반 회계법인 입사자를 위한 채용공고 / 업계 뉴스 / 각 대형 법인의 인사이트 기사 링크 등을 제공하는 홈페이지 제작",
+    "category": "Web App"
+  },
+  "nddvcntt/qlcn": {
+    "summary": "A full‑stack Next.js application for managing multi‑branch rice‑box operations with PostgreSQL, RBAC, and E2E tests.",
+    "category": "Web App"
+  },
+  "yuang093/game-SpaceX": {
+    "summary": "A browser‑based RPG and physics simulation where players manage a SpaceX‑style launch base and pilot rockets to various missions.",
+    "category": "Game"
+  },
+  "tharun0064/smart-installation": {
+    "summary": "CLI tool that runs installation scripts step‑by‑step, using an LLM to diagnose failures and suggest fixes.",
+    "category": "CLI / Tooling"
+  },
+  "only-sun/school_book": {
+    "summary": "A local‑first learning notebook that mimics Obsidian with Markdown editing, knowledge graph, and teaching agent features.",
+    "category": "AI / Agents"
+  },
+  "jlixfeld/mcp-fleet-core": {
+    "summary": "Shared cross-cutting controls (bearer auth, call logging, egress, secret-scan) for the FastMCP fleet — ADR-33 Option C",
+    "category": "Library / SDK"
+  },
+  "homebox78/SoliGuard": {
+    "summary": "SoliGuard is a local desktop app that scans documents for personal data, masks or removes it, and generates a PDF report.",
+    "category": "CLI / Tooling"
+  },
+  "katezgit/hud-evals": {
+    "summary": "A workflow engine that gates design, code, and review steps with human approvals and automated checks.",
+    "category": "DevOps / Infra"
+  },
+  "Thedeergod666/Musage": {
+    "summary": "Musage is a Windows desktop overlay that shows real‑time MiniMax token usage and reset times.",
+    "category": "CLI / Tooling"
   }
 }

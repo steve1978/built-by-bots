@@ -39,6 +39,7 @@ const SEARCH_PAGES = Number(process.env.SEARCH_PAGES || 10);       // up to 1000
 const COMMITS_PER_REPO = 15;  // recent commits to scan for a fingerprint
 const MAX_CHECKS = Number(process.env.MAX_CHECKS || 500); // commit-verify calls/run (rate-limit budget)
 const MAX_SUMMARIES = Number(process.env.MAX_SUMMARIES || 30); // OpenRouter calls/run
+const HEAL_PER_RUN = Number(process.env.HEAL_PER_RUN || 20); // fix old blank/"Other" entries/run
 const TIME_BUDGET_MS = Number(process.env.TIME_BUDGET_MS || 360_000); // hard stop → always deploy
 const START = Date.now();
 const overBudget = () => Date.now() - START > TIME_BUDGET_MS;
@@ -54,30 +55,39 @@ const SOURCES = [
 const CLAUDE_FP = /Co-Authored-By:\s*Claude/i;
 const CODEX_FP = /Co-authored-by:\s*openai-codex/i;
 
-// Fixed taxonomy so categories stay consistent and filterable.
+// Fixed taxonomy so categories stay consistent and filterable. The extra
+// buckets (Security, Finance, Hardware, Education, Science, Productivity) exist
+// to drain the "Other" pile — most niche projects fit one of these.
 const CATEGORIES = [
   "AI / Agents", "Web App", "CLI / Tooling", "API / Backend", "Game",
-  "Data / ML", "Mobile", "Library / SDK", "DevOps / Infra",
-  "Automation / Bot", "Docs / Content", "Other",
+  "Data / ML", "Mobile", "Library / SDK", "DevOps / Infra", "Automation / Bot",
+  "Security", "Finance / Crypto", "Hardware / IoT", "Education",
+  "Science / Health", "Productivity", "Docs / Content", "Other",
 ];
 
 // Keyword heuristic — fallback when the LLM is unavailable, and to backfill
-// older cached entries. Order matters: first match wins.
+// older cached entries. Order matters: first match wins, so specific buckets
+// come before generic ones.
 const RULES = [
-  ["Game", /\b(game|arcade|puzzle|platformer|roguelike|rpg|tetris|gameplay|2d|3d game)\b/],
-  ["AI / Agents", /\b(agent|llm|chatbot|chat bot|rag|prompt|gpt|openai|anthropic|claude|diffusion|embedding|neural|ai[- ]?(powered|assistant|app)|vision model)\b/],
+  ["Game", /\b(game|arcade|puzzle|platformer|roguelike|rpg|tetris|gameplay|unity|godot|phaser|2d game|3d game)\b/],
+  ["AI / Agents", /\b(agent|llm|chatbot|chat bot|\brag\b|prompt|gpt|openai|anthropic|claude|diffusion|embedding|neural net|ai[- ]?(powered|assistant|app|tool)|vision model|fine[- ]tun)\b/],
+  ["Finance / Crypto", /\b(crypto(currency)?|bitcoin|ethereum|blockchain|trading|defi|wallet|finance|invoic|invest|stock|etf|portfolio|payment|banking|budget|accounting|tax)\b/],
+  ["Security", /\b(security|vulnerab|exploit|pentest|encryption|password|authentication|jailbreak|malware|firewall|\bcve\b|owasp|phishing|forensic)\b/],
+  ["Hardware / IoT", /\b(arduino|raspberry pi|esp32|esp8266|microcontroller|\biot\b|sensor|firmware|embedded device|robot|drone|3d print|m5stack|wi-?fi controller)\b/],
+  ["Science / Health", /\b(health|medical|biolog|chemistry|physics|clinical|genom|protein|astronom|scientific|\bemg\b|diagnos|patient|neuroscience|molecul)\b/],
+  ["Education", /\b(learn|course|tutorial|education|student|quiz|flashcard|study|school|teaching|lesson|exam|curriculum)\b/],
   ["Mobile", /\b(ios|android|react native|flutter|swiftui|mobile app)\b/],
-  ["Game", /\bunity|godot|phaser\b/],
-  ["DevOps / Infra", /\b(docker|kubernetes|k8s|terraform|ci\/cd|helm|deployment|package manager|homebrew|infra(structure)?|self[- ]host)\b/],
-  ["Automation / Bot", /\b(bot|automation|scraper|scraping|webhook|cron|crawler|workflow automation)\b/],
-  ["Data / ML", /\b(dataset|machine learning|training|analytics|pandas|etl|data pipeline|visualization|notebook)\b/],
-  ["CLI / Tooling", /\b(cli|command[- ]line|terminal|tui|devtool|developer tool)\b/],
+  ["DevOps / Infra", /\b(docker|kubernetes|k8s|terraform|ci\/cd|helm|deployment|package manager|homebrew|infra(structure)?|self[- ]host|monitoring|observability)\b/],
+  ["Automation / Bot", /\b(bot|automation|scraper|scraping|webhook|\bcron\b|crawler|workflow automation|discord bot|telegram)\b/],
+  ["Data / ML", /\b(dataset|machine learning|training|analytics|pandas|\betl\b|data pipeline|visualization|notebook|data science)\b/],
+  ["CLI / Tooling", /\b(cli|command[- ]line|terminal|\btui\b|devtool|developer tool|generator|converter|formatter)\b/],
   ["API / Backend", /\b(api|rest|graphql|backend|microservice|endpoint|webserver|server)\b/],
-  ["Web App", /\b(web app|website|dashboard|frontend|react|vue|svelte|next\.?js|browser|landing page|portfolio)\b/],
-  ["Library / SDK", /\b(library|sdk|framework|toolkit|wrapper|plugin|npm package|module)\b/],
-  ["Docs / Content", /\b(documentation|docs|blog|paper|thesis|latex|markdown|notes|book)\b/],
+  ["Web App", /\b(web app|website|dashboard|frontend|react|vue|svelte|next\.?js|browser|landing page|portfolio|\bpwa\b)\b/],
+  ["Productivity", /\b(productivity|todo|task manager|note[- ]taking|calendar|organizer|tracker|planner)\b/],
+  ["Library / SDK", /\b(library|sdk|framework|toolkit|wrapper|plugin|npm package|module|boilerplate|starter|template)\b/],
+  ["Docs / Content", /\b(documentation|docs|blog|paper|thesis|latex|markdown|notes|book|writing)\b/],
 ];
-const LANG_HINT = { Swift: "Mobile", Kotlin: "Mobile", Dart: "Mobile", TeX: "Docs / Content", "Jupyter Notebook": "Data / ML" };
+const LANG_HINT = { Swift: "Mobile", Kotlin: "Mobile", Dart: "Mobile", TeX: "Docs / Content", "Jupyter Notebook": "Data / ML", Solidity: "Finance / Crypto" };
 
 function categorize(text, language) {
   const t = (text || "").toLowerCase();
@@ -234,8 +244,9 @@ async function recategorize() {
   console.log(`Recategorized ${feed.entries.length} entries.`);
 }
 
-// Ask the LLM to classify a single summary into one category. Cheap + fast.
-async function classify(summary) {
+// Ask the LLM to classify a repo into one category. Cheap + fast. Uses the
+// repo name + language as extra signal so even terse summaries place well.
+async function classify(name, summary, language) {
   if (!OR_KEY) return null;
   try {
     const res = await fetchRetry("https://openrouter.ai/api/v1/chat/completions", {
@@ -244,8 +255,10 @@ async function classify(summary) {
       body: JSON.stringify({
         model: OR_MODEL, max_tokens: 12, temperature: 0,
         messages: [{ role: "user", content:
-          `Classify this project into ONE category. Reply with only the category name.\n` +
-          `Categories: ${CATEGORIES.join(", ")}\nProject: ${summary}` }],
+          `Classify this project into ONE category. Reply with only the category name. ` +
+          `Avoid "Other" unless nothing else fits.\n` +
+          `Categories: ${CATEGORIES.join(", ")}\n` +
+          `Repo: ${name}${language ? ` (${language})` : ""}\nWhat it does: ${summary}` }],
       }),
     }, { label: "classify", tries: 2, base: 8000 });
     if (!res.ok) return null;
@@ -262,7 +275,7 @@ async function recategorizeLLM() {
   let fixed = 0;
   for (const e of feed.entries) {
     if (!e.summary || e.summary.length < 8 || (e.category && e.category !== "Other")) continue;
-    const cat = await classify(e.summary);
+    const cat = await classify(e.repo, e.summary, e.language);
     if (cat && cat !== "Other") {
       e.category = cat;
       if (cache[e.repo]) cache[e.repo].category = cat;
@@ -344,10 +357,30 @@ async function main() {
     console.log(`  + [${source}] ${name}`);
   }
 
-  // Backfill a category on any carried-over entry that predates this feature.
+  // Self-heal the backlog: re-apply the (improved) heuristic for free, then
+  // spend a small LLM budget re-summarizing blanks and re-classifying "Other".
   for (const e of merged.values()) {
-    if (!e.category) e.category = categorize(e.summary || "", e.language);
+    if (!e.category || e.category === "Other") e.category = categorize(e.summary || "", e.language);
   }
+  let healed = 0;
+  for (const e of merged.values()) {
+    if (overBudget() || healed >= HEAL_PER_RUN) break;
+    const blank = !e.summary || e.summary.length < 8;
+    if (!blank && e.category !== "Other") continue;
+    if (blank) {
+      const readme = await ghReadme(e.repo);
+      if (!readme) continue;
+      ({ summary: e.summary, category: e.category } = await summarize(e.repo, readme, e.summary || "", e.language));
+    } else {
+      const cat = await classify(e.repo, e.summary, e.language);
+      if (!cat || cat === "Other") continue;
+      e.category = cat;
+    }
+    cache[e.repo] = { summary: e.summary, category: e.category };
+    healed++;
+    await sleep(1100);
+  }
+  if (healed) console.log(`Healed ${healed} backlog entries (summaries/categories).`);
 
   const entries = [...merged.values()].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
