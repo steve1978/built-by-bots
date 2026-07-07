@@ -41,9 +41,16 @@ const MAX_CHECKS = Number(process.env.MAX_CHECKS || 500); // commit-verify calls
 const MAX_SUMMARIES = Number(process.env.MAX_SUMMARIES || 30); // OpenRouter calls/run
 const HEAL_PER_RUN = Number(process.env.HEAL_PER_RUN || 40); // fix old blank/"Other" entries/run
 const REFRESH_BATCHES = Number(process.env.REFRESH_BATCHES || 12); // GraphQL calls/run × 100 repos each
-const TIME_BUDGET_MS = Number(process.env.TIME_BUDGET_MS || 360_000); // hard stop → always deploy
+const TIME_BUDGET_MS = Number(process.env.TIME_BUDGET_MS || 480_000); // hard stop → always deploy
 const START = Date.now();
 const overBudget = () => Date.now() - START > TIME_BUDGET_MS;
+// Phase deadlines, as fractions of the total budget. Without these, discovery
+// reliably eats the whole budget and the later phases (healing, stats refresh)
+// starve — CI proved it: 449 verify-checks, 0 refreshes.
+const pastFrac = (f) => Date.now() - START > TIME_BUDGET_MS * f;
+const PHASE_SEARCH = 0.2;   // repo search done by 20%
+const PHASE_VERIFY = 0.55;  // commit verification done by 55%
+const PHASE_HEAL = 0.7;     // healing done by 70% — refresh gets the rest
 
 // Source list for the frontend (the actual detection is the regexes below).
 const SOURCES = [
@@ -143,7 +150,7 @@ async function searchNewRepos() {
   const q = `created:>=${since} fork:false`;
   const out = [];
   for (let page = 1; page <= SEARCH_PAGES; page++) {
-    if (overBudget()) break;
+    if (pastFrac(PHASE_SEARCH)) break;
     const url =
       `https://api.github.com/search/repositories` +
       `?q=${encodeURIComponent(q)}&sort=updated&order=desc&per_page=${PER_PAGE}&page=${page}`;
@@ -387,7 +394,7 @@ async function main() {
   // 2. Verify each unseen/updated repo via its commits; keep AI-built ones.
   let checks = 0, aiFound = 0, summaries = 0;
   for (const r of repos) {
-    if (overBudget()) { console.log("  ⏱ time budget reached — proceeding to write"); break; }
+    if (pastFrac(PHASE_VERIFY)) { console.log("  ⏱ verify-phase budget reached"); break; }
     const name = r.full_name;
     if (merged.has(name)) continue;                 // already in the feed — keep it
     const prev = checked[name];
@@ -439,7 +446,7 @@ async function main() {
   }
   let healed = 0;
   for (const e of merged.values()) {
-    if (overBudget() || healed >= HEAL_PER_RUN) break;
+    if (pastFrac(PHASE_HEAL) || healed >= HEAL_PER_RUN) break;
     const blank = !e.summary || e.summary.length < 8;
     if (!blank && e.category !== "Other") continue;
     if (blank) {
