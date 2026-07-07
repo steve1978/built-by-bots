@@ -188,6 +188,33 @@
   .langdot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
   .stars { display: inline-flex; align-items: center; gap: 4px; color: var(--muted-2); font-variant-numeric: tabular-nums; }
   .stars.has { color: #e3b341; font-weight: 700; }
+  .forks, .fol { display: inline-flex; align-items: center; gap: 4px; font-variant-numeric: tabular-nums; }
+
+  /* ---------- gems ---------- */
+  .gemtoggle {
+    border: 1px solid var(--hair); background: var(--bg-2); color: var(--muted);
+    padding: 9px 13px; border-radius: 11px; font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap;
+  }
+  .gemtoggle:hover { color: var(--text); border-color: #313647; }
+  .gemtoggle.active {
+    color: #f0e3ff; border-color: rgba(190,140,255,.55);
+    background: rgba(150,100,255,.14); box-shadow: 0 0 14px rgba(150,100,255,.15);
+  }
+  .mini-tag {
+    font-size: 9.5px; font-weight: 800; letter-spacing: .05em; padding: 1px 6px;
+    border-radius: 6px; margin-left: 7px; vertical-align: middle; white-space: nowrap;
+  }
+  .tag-gem { color: #c9a8ff; border: 1px solid rgba(190,140,255,.45); background: rgba(150,100,255,.14); }
+  .tag-rising { color: #ffb04d; border: 1px solid rgba(255,176,77,.4); background: rgba(255,176,77,.1); }
+  .tag-dev { color: #6fc7ff; border: 1px solid rgba(111,199,255,.4); background: rgba(111,199,255,.1); }
+
+  .showmore {
+    border: 1px dashed var(--hair); background: transparent; color: var(--muted);
+    padding: 13px; border-radius: 14px; font-size: 13.5px; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: all .15s; width: 100%;
+  }
+  .showmore:hover { color: var(--text); border-color: #313647; background: rgba(255,255,255,.02); }
 
   /* ---------- skeleton + empty ---------- */
   .skel { height: 96px; border-radius: 16px; border: 1px solid var(--border-solid); background:
@@ -230,8 +257,10 @@
           </div>
           <div class="right">
             <input class="search" id="search" placeholder="Search…" />
+            <button class="gemtoggle" id="gems" title="Show only gems">💎 Gems</button>
             <select class="sort" id="sort">
               <option value="new">Newest</option>
+              <option value="gems">💎 Gem score</option>
               <option value="stars">Top stars</option>
             </select>
           </div>
@@ -256,7 +285,14 @@
   const catbarEl = document.getElementById("catbar");
   const monthsEl = document.getElementById("months");
 
-  let state = { entries: [], filter: "all", q: "", sort: "new", category: "all", month: "all", generatedAt: null, loaded: false };
+  let state = { entries: [], filter: "all", q: "", sort: "new", category: "all", month: "all", gems: false, generatedAt: null, loaded: false };
+
+  // Gem signals (derived client-side from refreshed stats).
+  const ageDays = (e) => Math.max((Date.now() - new Date(e.createdAt)) / 86400000, 1);
+  const isGem = (e) => (e.gemScore || 0) >= 10 || (e.stars || 0) >= 5;
+  const isRising = (e) => ageDays(e) <= 14 && (e.stars || 0) >= 3;
+  const isKnownDev = (e) => (e.followers || 0) >= 200;
+  const fmtNum = (n) => n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, "") + "k" : String(n);
   const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const monthKey = (iso) => (iso || "").slice(0, 7);              // "2026-06"
   const monthLabel = (k) => { const [y, m] = k.split("-"); return `${MONTHS[+m - 1]} ${y}`; };
@@ -327,15 +363,20 @@
     }
     renderCatbar();
     renderMonths();
+    // Render cap: reset when any filter changes, grow via "Show more".
+    const sig = [state.filter, state.category, state.month, state.gems, state.q, state.sort].join("|");
+    if (sig !== state._sig) { state._sig = sig; state.limit = 300; }
     const q = state.q.toLowerCase();
     let list = state.entries.filter(e =>
       (state.filter === "all" || e.source === state.filter) &&
       (state.category === "all" || e.category === state.category) &&
       (state.month === "all" || monthKey(e.createdAt) === state.month) &&
+      (!state.gems || isGem(e) || isRising(e) || isKnownDev(e)) &&
       (!q || (e.repo + " " + (e.summary || "") + " " + (e.category || "")).toLowerCase().includes(q))
     );
-    list.sort(state.sort === "stars"
-      ? (a, b) => (b.stars||0) - (a.stars||0) || new Date(b.createdAt) - new Date(a.createdAt)
+    list.sort(
+      state.sort === "stars" ? (a, b) => (b.stars||0) - (a.stars||0) || new Date(b.createdAt) - new Date(a.createdAt)
+      : state.sort === "gems" ? (a, b) => (b.gemScore||0) - (a.gemScore||0) || (b.stars||0) - (a.stars||0) || new Date(b.createdAt) - new Date(a.createdAt)
       : (a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     if (!list.length) {
@@ -344,6 +385,8 @@
     }
 
     const now = Date.now();
+    const total = list.length;
+    if (total > state.limit) list = list.slice(0, state.limit);
     feedEl.innerHTML = list.map((e, i) => {
       const [owner, name] = (e.repo || "/").split("/");
       const label = e.source === "claude" ? "Claude" : "Codex";
@@ -351,30 +394,37 @@
       const summary = e.summary || "";
       const isNew = e.createdAt && (now - new Date(e.createdAt)) < 86400000;
       const lc = LANG[e.language] || "#8b90a3";
+      const tags =
+        (isNew ? '<span class="new-tag">NEW</span>' : '') +
+        (isGem(e) ? '<span class="mini-tag tag-gem">💎 GEM</span>' : '') +
+        (!isGem(e) && isRising(e) ? '<span class="mini-tag tag-rising">🔥 RISING</span>' : '') +
+        (isKnownDev(e) ? `<span class="mini-tag tag-dev">👤 ${fmtNum(e.followers)} FOLLOWERS</span>` : '');
       const foot = [
         e.category ? `<span class="cat" data-cat="${esc(e.category)}">${esc(e.category)}</span>` : "",
         e.language ? `<span class="lang"><span class="langdot" style="background:${lc}"></span>${esc(e.language)}</span>` : "",
         e.createdAt ? `<span class="clock">${CLOCK} ${timeAgo(e.createdAt)}</span>` : "",
-        `<span class="stars${(e.stars||0) > 0 ? " has" : ""}">★ ${e.stars || 0}</span>`,
+        `<span class="stars${(e.stars||0) > 0 ? " has" : ""}">★ ${fmtNum(e.stars || 0)}</span>`,
+        (e.forks||0) > 0 ? `<span class="forks">⑂ ${fmtNum(e.forks)}</span>` : "",
       ].filter(Boolean).join("");
       return `
       <a class="card ${e.source}" href="${esc(e.url)}" target="_blank" rel="noopener" style="animation-delay:${Math.min(i*25,350)}ms">
         <div class="card-top">
           ${e.avatar ? `<img class="avatar" src="${esc(e.avatar)}" alt="" loading="lazy"/>` : `<div class="avatar"></div>`}
-          <span class="repo"><span class="owner">${esc(owner)}/</span>${esc(name || "")}${isNew ? '<span class="new-tag">NEW</span>' : ''}</span>
+          <span class="repo"><span class="owner">${esc(owner)}/</span>${esc(name || "")}${tags}</span>
           <span class="badge ${e.source}">${mark}${label}</span>
         </div>
         <p class="desc ${summary ? "" : "empty"}">${summary ? esc(summary) : "No description yet."}</p>
         <div class="card-foot">${foot}</div>
       </a>`;
-    }).join("");
+    }).join("") + (total > list.length
+      ? `<button class="showmore" id="showmore">Show more (${total - list.length} remaining)</button>` : "");
   }
 
   async function load() {
     try {
       const res = await fetch("./feed.json?_=" + Date.now());
       const data = await res.json();
-      state.entries = data.entries || [];
+      state.entries = (data.entries || []).filter(e => !e.gone); // hide deleted/private repos
       state.generatedAt = data.generatedAt;
       state.loaded = true;
       setCounts();
@@ -394,6 +444,15 @@
   searchEl.addEventListener("input", () => { state.q = searchEl.value; render(); });
   sortEl.addEventListener("change", () => { state.sort = sortEl.value; render(); });
 
+  // Gems-only toggle — also flips the sort to gem score for a useful view.
+  const gemsBtn = document.getElementById("gems");
+  gemsBtn.addEventListener("click", () => {
+    state.gems = !state.gems;
+    gemsBtn.classList.toggle("active", state.gems);
+    if (state.gems && state.sort === "new") { state.sort = "gems"; sortEl.value = "gems"; }
+    render();
+  });
+
   // Category pill bar.
   catbarEl.addEventListener("click", (e) => {
     const p = e.target.closest(".catpill"); if (!p) return;
@@ -408,6 +467,8 @@
 
   // Click a card's category chip to filter by it (without following the link).
   feedEl.addEventListener("click", (e) => {
+    const more = e.target.closest(".showmore");
+    if (more) { state.limit += 700; render(); return; }
     const chip = e.target.closest(".cat"); if (!chip) return;
     e.preventDefault();
     state.category = chip.dataset.cat; render();

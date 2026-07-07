@@ -39,7 +39,8 @@ const SEARCH_PAGES = Number(process.env.SEARCH_PAGES || 10);       // up to 1000
 const COMMITS_PER_REPO = 15;  // recent commits to scan for a fingerprint
 const MAX_CHECKS = Number(process.env.MAX_CHECKS || 500); // commit-verify calls/run (rate-limit budget)
 const MAX_SUMMARIES = Number(process.env.MAX_SUMMARIES || 30); // OpenRouter calls/run
-const HEAL_PER_RUN = Number(process.env.HEAL_PER_RUN || 20); // fix old blank/"Other" entries/run
+const HEAL_PER_RUN = Number(process.env.HEAL_PER_RUN || 40); // fix old blank/"Other" entries/run
+const REFRESH_BATCHES = Number(process.env.REFRESH_BATCHES || 12); // GraphQL calls/run × 100 repos each
 const TIME_BUDGET_MS = Number(process.env.TIME_BUDGET_MS || 360_000); // hard stop → always deploy
 const START = Date.now();
 const overBudget = () => Date.now() - START > TIME_BUDGET_MS;
@@ -171,6 +172,80 @@ async function verifyAI(fullName) {
     if (CODEX_FP.test(msg)) return "codex";
   }
   return null;
+}
+
+// ---------- stats refresh (stars / forks / owner followers) ----------
+// Discovery captures a repo at birth (usually 0 stars) and would otherwise
+// never look again — so star counts go stale and gems stay invisible. This
+// re-checks tracked repos via the GraphQL API, 100 per request (dirt cheap:
+// ~12 requests refresh 1200 repos). Young and starred repos refresh most
+// often; the rest rotate least-recently-refreshed first.
+async function refreshStats(merged) {
+  if (!TOKEN) return 0;
+  const now = Date.now();
+  const all = [...merged.values()].filter((e) => !e.gone && e.repo?.includes("/"));
+  const isHot = (e) =>
+    now - new Date(e.createdAt).getTime() < 14 * 86400_000 || (e.stars || 0) > 0;
+  const lastRef = (e) => (e.refreshedAt ? new Date(e.refreshedAt).getTime() : 0);
+  const due = [
+    // hot repos not refreshed in the last 3h, then everything else LRU
+    ...all.filter((e) => isHot(e) && now - lastRef(e) > 3 * 3600_000),
+    ...all.filter((e) => !isHot(e)).sort((a, b) => lastRef(a) - lastRef(b)),
+  ];
+  const pick = [...new Set(due)].slice(0, REFRESH_BATCHES * 100);
+
+  let refreshed = 0;
+  for (let i = 0; i < pick.length; i += 100) {
+    if (overBudget()) break;
+    const batch = pick.slice(i, i + 100);
+    const q = batch
+      .map((e, j) => {
+        const [o, n] = e.repo.split("/");
+        return `r${j}: repository(owner:${JSON.stringify(o)}, name:${JSON.stringify(n)})` +
+          `{ stargazerCount forkCount owner { login ... on User { followers { totalCount } } } }`;
+      })
+      .join("\n");
+    const res = await fetchRetry("https://api.github.com/graphql", {
+      method: "POST",
+      headers: ghHeaders(),
+      body: JSON.stringify({ query: `query{${q}}` }),
+    }, { label: "graphql", tries: 3, base: 10000 });
+    if (!res || !res.ok) { console.error(`  graphql ${res?.status}`); break; }
+    let data;
+    try { data = (await res.json()).data || {}; } catch { break; }
+    batch.forEach((e, j) => {
+      const r = data[`r${j}`];
+      if (!r) {
+        // Deleted, made private, or renamed. Two strikes before hiding, so a
+        // transient API hiccup can't disappear a repo.
+        e.goneCount = (e.goneCount || 0) + 1;
+        if (e.goneCount >= 2) e.gone = true;
+        return;
+      }
+      e.goneCount = 0;
+      e.stars = r.stargazerCount ?? e.stars ?? 0;
+      e.forks = r.forkCount ?? 0;
+      e.followers = r.owner?.followers?.totalCount ?? e.followers ?? 0;
+      e.refreshedAt = new Date().toISOString();
+      refreshed++;
+    });
+    await sleep(1500);
+  }
+  return refreshed;
+}
+
+// Gem score — simple and explainable: stars carry the weight, forks count
+// double (someone building on it is a strong signal), a recency boost doubles
+// young starred repos so risers surface, and famous owners add a little.
+function gemScore(e) {
+  const ageDays = Math.max((Date.now() - new Date(e.createdAt).getTime()) / 86400_000, 1);
+  const s = e.stars || 0;
+  const score =
+    s +
+    2 * (e.forks || 0) +
+    s * (14 / Math.max(ageDays, 14)) +          // recency boost (≤ +100%)
+    Math.min(e.followers || 0, 1000) / 100;     // known-dev bonus (≤ +10)
+  return Math.round(score * 10) / 10;
 }
 
 async function ghReadme(fullName) {
@@ -381,6 +456,11 @@ async function main() {
     await sleep(1100);
   }
   if (healed) console.log(`Healed ${healed} backlog entries (summaries/categories).`);
+
+  // Refresh stars/forks/followers on a rotating slice, then score everything.
+  const refreshed = await refreshStats(merged);
+  if (refreshed) console.log(`Refreshed stats for ${refreshed} repos.`);
+  for (const e of merged.values()) e.gemScore = gemScore(e);
 
   const entries = [...merged.values()].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
